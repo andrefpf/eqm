@@ -1,0 +1,386 @@
+\NeedsTeXFormat{LaTeX2e} %this is necessary for sty files?
+\ProvidesPackage{cco-ufsc-tcc-tables}[2022/10/07 -- Provides a package with usefull commands for creating tables in TCCs for CCO/UFSC]
+%happy hallowen
+
+\PackageInfo{cco-ufsc-tcc-tables}{info-text}
+
+%useful infos: https://pt.sharelatex.com/learn/Writing_your_own_package
+% \RequirePackage[table]{xcolor}
+\RequirePackage{colortbl}
+\RequirePackage{hhline}
+\RequirePackage{framed}
+\RequirePackage{ulem}
+\RequirePackage{multirow}
+\RequirePackage{tabularx}
+\RequirePackage{amssymb}
+% \RequirePackage[showframe]{geometry}
+% \usepackage[showframe]{geometry}
+
+% Definicao da geometria da página
+\RequirePackage[a4paper,inner=3cm,outer=2cm,top=3cm,bottom=2cm,head=2cm,foot=2cm]{geometry} %ufscThesis.cls
+% Superior 2,0 cm
+% – Inferior 1,5 cm
+% – Interna 2,5 cm
+% – Externa 1,5 cm
+%Cabeçalho e Rodapé 0,7 cm; (head and foot)
+
+% \RequirePackage{eforms}
+% \makesavenoteenv{tabular}
+% \makesavenoteenv{table}
+\RequirePackage{ifthen}
+
+% Define flags
+\newboolean{isPreTcc}
+\newboolean{isTccI}
+\newboolean{isTccII}
+
+% Initialize all to false
+\setboolean{isPreTcc}{false}
+\setboolean{isTccI}{false}
+\setboolean{isTccII}{false}
+
+% Save the original \tcc command to \originaltcc
+\let\originaltcc\tcc
+
+\renewcommand{\tcc}[1]{%
+  % Call the original command
+  \originaltcc%
+  % Add your custom logic here
+  \ifthenelse{\equal{#1}{pre}}{%
+    \setboolean{isPreTcc}{false}%
+  }{%
+  \ifthenelse{\equal{#1}{tcc-i}}{%
+    \setboolean{isTccI}{true}%
+  }{%
+  \ifthenelse{\equal{#1}{tcc-ii}}{%
+    \setboolean{isTccII}{false}%
+  }{%
+    \PackageError{tccoptions}{Unknown TCC type `#1'}{Valid options: pre, tcc-i, tcc-ii}%
+  }}}%
+}
+
+
+\newcommand{\@coordenadorPreTcc}{PREENCHER coordenadorPreTcc}%
+\newcommand{\imprimircoordenadorPreTcc}{\@coordenadorPreTcc}
+\newcommand{\coordenadorPreTcc}[1]{%
+	\renewcommand{\@coordenadorPreTcc}{%
+	#1%
+	}%
+}%
+
+\newcommand{\@areaDeConcentracao}{PREENCHER areaDeConcentracao}%
+\newcommand{\imprimirAreaDeConcentracao}{\@areaDeConcentracao}
+\newcommand{\areaDeConcentracao}[1]{%
+	\renewcommand{\@areaDeConcentracao}{%
+	#1%
+	}%
+}%
+
+\newcommand{\@dataAvaliacaoPreTCC}{\the\day/\the\month/\the\year}%
+\newcommand{\imprimirDataAvaliacaoPreTCC}{\@dataAvaliacaoPreTCC}
+\newcommand{\dataAvaliacaoPreTCC}[1]{%
+	\renewcommand{\@dataAvaliacaoPreTCC}{%
+	#1%
+	}%
+}%
+
+
+% \newcommand{\fcl}[1]{\begin{flushleft}#1\end{flushleft}}%
+\newcommand{\fcl}[1]{\raggedright #1}%
+
+\newcommand{\@professorResponsavel}{\imprimirorientador}%
+\newcommand{\imprimirProfessorResponsavel}{\@professorResponsavel}
+\newcommand{\professorResponsavel}[1]{%
+	\renewcommand{\@professorResponsavel}{%
+	#1%
+	}%
+}%
+
+
+
+\newcommand{\@instituicaoResponsavelConcordancia}{instituicaoResponsavelConcordancia}%
+\newcommand{\imprimirInstituicaoResponsavelConcordancia}{\@instituicaoResponsavelConcordancia}
+\newcommand{\instituicaoResponsavelConcordancia}[1]{%
+	\renewcommand{\@instituicaoResponsavelConcordancia}{%
+	#1%
+	}%
+}%
+
+
+\newcommand{\@responsavelConcordancia}{\imprimirProfessorResponsavel}%
+\newcommand{\imprimirResponsavelConcordancia}{\@responsavelConcordancia}
+\newcommand{\responsavelConcordancia}[1]{%
+	\renewcommand{\@responsavelConcordancia}{%
+	#1%
+	}%
+}%
+
+
+\newcommand{\@funcaoResponsavelConcordancia}{Prof. INE/CTC}%
+\newcommand{\imprimirFuncaoResponsavelConcordancia}{\@funcaoResponsavelConcordancia}
+\newcommand{\funcaoResponsavelConcordancia}[1]{%
+	\renewcommand{\@funcaoResponsavelConcordancia}{%
+	#1%
+	}%
+}%
+
+
+\newcommand{\@foneResponsavelConcordancia}{PREENCHER foneResponsavelConcordancia}%
+\newcommand{\imprimirFoneResponsavelConcordancia}{\@foneResponsavelConcordancia}
+\newcommand{\foneResponsavelConcordancia}[1]{%
+	\renewcommand{\@foneResponsavelConcordancia}{%
+	#1%
+	}%
+}%
+
+
+% \definecolor{shadecolor}{rgb}{0.8,0.8,0.8}
+\definecolor{shadecolor}{HTML}{C0C0C0}
+
+% name=choiceMenuName
+
+\def\DefaultOptionsofText{
+ print, bordercolor=red,backgroundcolor=lightgray,borderstyle={U},
+ format = {var me = event.target.name;  
+          var f = this.getField(me); 
+          f.textFont = 'Courier';
+          f.textSize = 8}}
+
+%1 = critério
+%2 = valor
+\newcommand{\checkCCO}[2]{\begin{minipage}{\hsize}\ChoiceMenu[bordercolor={},backgroundcolor={},width=\hsize,height=\baselineskip,radio,radiosymbol=\ding{56}, name=check#1]{ }{ =#2}\end{minipage}\cellcolor{shadecolor}}
+
+% 
+
+% \centering
+
+
+\newcounter{counterCriterio}
+
+\newcommand{\criterio}[2]{\stepcounter{counterCriterio}\begin{minipage}{\hsize}\fcl{\small \arabic{counterCriterio}. #1}\end{minipage} & \checkCCO{\arabic{counterCriterio}}{sim}  & \checkCCO{\arabic{counterCriterio}}{parcial}  & \checkCCO{\arabic{counterCriterio}}{nao}  & \checkCCO{\arabic{counterCriterio}}{na} & \begin{minipage}{\hsize}\TextField[multiline=true,height=#2\baselineskip,bordercolor={},backgroundcolor={}, name=text\arabic{counterCriterio}, width=\hsize]{}\end{minipage}}
+
+
+
+% \newcommand{\checkCCO}{\ChoiceMenu{ }\cellcolor{shadecolor}}
+
+
+\newcommand\VRule[1][\arrayrulewidth]{\vrule width #1}
+
+\RequirePackage{helvet}
+
+\newcommand{\imprimirfolhadeaprovacaodeproposta}{%
+	\ifthenelse{\boolean{isPreTcc}}{%
+% \newgroup
+% \renewcommand{\familydefault}{\sfdefault}
+% \fontfamily{phv}
+\fontfamily{phv}\selectfont
+
+
+\cleardoublepage
+
+\newgeometry{left=2.75cm,top=2.3cm}
+
+
+
+\phantomsection
+\addcontentsline{toc}{chapter}{Folha de Aprovação de Proposta de TCC}
+
+\noindent\resizebox{\textwidth}{!}{
+			\begin{tabular}{X p{\textwidth}} \centering
+				\cellcolor{shadecolor} {\textbf{\footnotesize{FOLHA DE APROVAÇÃO DE PROPOSTA DE TCC}}}
+			\end{tabular}
+		}
+
+	\vspace{4pt}
+
+	\small
+	\noindent\resizebox{\textwidth}{!}{
+		\begin{tabular}{|l|X p{107.44mm}|}
+			%\begin{small}
+				\hline
+			    \textbf{Acadêmico} &  \imprimirautor \\ \hline
+			    \textbf{Título do trabalho} & \imprimirtitulo \\ \hline
+			    \textbf{Curso} & \imprimircurso{}/INE/UFSC \\ \hline
+			    \textbf{Área de Concentração} &  \imprimirAreaDeConcentracao{} \\ \hline
+
+			%\end{small}
+		\end{tabular}
+	}
+
+	\vspace{4pt} \SingleSpacing
+
+	\noindent
+	\textbf{Instruções para preenchimento pelo \uline{\small{ORIENTADOR DO TRABALHO}}:}
+	\begin{itemize}[leftmargin=*,noitemsep,topsep=0pt]
+		\item[-] \small Para cada critério avaliado, assinale um X na coluna SIM apenas se considerado aprovado. Caso contrário, indique as alterações necessárias na coluna Observação.
+	\end{itemize}
+
+	\vspace{4pt}\footnotesize 
+	
+	\renewcommand\arraystretch{1.4}
+	\setlength\arrayrulewidth{.8pt}
+
+	
+
+
+	\noindent\resizebox{\textwidth}{!}{
+		% \begin{tabular}{|X p{70.814mm}|X p{12.8198mm}|X p{12.8198mm}|X p{12.8198mm}|X p{12.8198mm}|X p{36.0174mm}|} 
+  \begin{Form}
+		\begin{tabular}{|X p{80mm}|X p{12mm}|X p{12mm}|X p{12mm}|X p{12mm}|X p{40mm}|} 
+			%\begin{small}\hhline{*{1}{{|~}*{4}{\arrayrulecolor{shadecolor}|-}|~}
+				\hline
+				% %\multirow{2}{*}{\textbf{Critérios}} &  \textbf{Sim} &  \textbf{Parcial} &  \textbf{Não} &  \textbf{Não se aplica} & \multirow{2}{*}{\textbf{Observação}}\\ \hline{>{\arrayrulecolor{shadecolor}}}
+			    \cellcolor{shadecolor}{~} & \multicolumn{4}{c|}{\cellcolor{shadecolor} \centering\textbf{Aprovado}} & \cellcolor{shadecolor} \\ \hhline{*{1}{>{\arrayrulecolor{shadecolor}}-}*{4}{>{\arrayrulecolor{black}}|-}>{\arrayrulecolor{shadecolor}}|->{\arrayrulecolor{black}}}
+			    \multirow{-1}{*}{\cellcolor{shadecolor} \begin{minipage}{\linewidth}\centering\textbf{Critérios}\end{minipage}} & \cellcolor{shadecolor}\centering\textbf{Sim} &  \cellcolor{shadecolor}\centering\textbf{Parcial} &  \cellcolor{shadecolor}\centering\textbf{Não} &  \cellcolor{shadecolor}\centering\textbf{Não se aplica} & \multirow{-1}{*}{\cellcolor{shadecolor} \begin{minipage}{\linewidth}\centering\textbf{Observação}\end{minipage}} \\ \hline
+				% \fcl{\small 1. O trabalho é adequado para um TCC no CCO/SIN (relevância/abrangência)?} & \checkCCO{1}{sim}  & \checkCCO{1}{parcial}  & \checkCCO{1}{nao}  & \checkCCO{1}{na}  & \\ \hline
+                \criterio{O trabalho é adequado para um TCC no CCO/SIN (relevância/abrangência)?}{2.5} \\ \hline
+			\criterio{O título do trabalho é adequado?}{1.5} \\ \hline
+			\criterio{O tema de pesquisa está claramente descrito?}{2.5} \\ \hline
+			\criterio{O problema/hipóteses de pesquisa do trabalho está claramente identificado?}{2.5} \\ \hline
+			\criterio{A relevância da pesquisa é justificada?}{1.5} \\ \hline
+			\criterio{Os objetivos descrevem completa e claramente o que se pretende alcançar neste trabalho?}{3.5} \\ \hline
+			\criterio{É definido o método a ser adotado no trabalho? O método condiz com os objetivos e é adequado para um TCC? }{3.5} \\ \hline
+			\criterio{Foi definido um cronograma coerente com o método definido (indicando todas as atividades) e com as datas das entregas (p.ex.Projeto I, II, Defesa)?}{4.5}  \\ \hline
+			\criterio{Foram identificados custos relativos à execução deste trabalho (se houver)? Haverá financiamento para estes custos?}{3.5} \\ \hline
+			\criterio{Foram identificados todos os envolvidos neste trabalho?}{2.5} \\ \hline
+			\criterio{As formas de comunicação foram definidas (ex: horários para orientação)?}{2.5} \\ \hline
+			\criterio{Riscos potenciais que podem causar desvios do plano foram identificados?}{2.5} \\ \hline
+			\criterio{Caso o TCC envolva a produção de um software ou outro tipo de produto e seja desenvolvido também como uma atividade	realizada numa empresa ou laboratório, consta da proposta uma declaração (Anexo 3) de ciência e concordância com a entrega do código fonte e/ou documentação produzidos? }{8} \\ \hline
+			% \end{small}
+		\end{tabular}
+    \end{Form}
+	}
+
+	\vspace{12pt}
+
+
+	\noindent\resizebox{\textwidth}{!}{
+        \begin{Form}
+		\noindent\begin{tabular}{|X p{40mm}|X p{40mm}|X p{19.5mm}|X p{38mm}|}
+			%\begin{small}
+				\hline
+			    {\footnotesize \textbf{Avaliação}} &  \multicolumn{1}{l}{\resizebox{4mm}{2mm}{\ChoiceMenu[bordercolor={black},backgroundcolor={},width=5mm, height=5mm, radio, radiosymbol=\ding{56}, name=choiceAprovacao]{ }{ =aprovado}}\textbf{ \footnotesize Aprovado}}  & \multicolumn{2}{c|}{\resizebox{4mm}{2mm}{\ChoiceMenu[bordercolor={black},backgroundcolor={},width=5mm, height=2mm, radio, radiosymbol=\ding{56}, name=choiceAprovacao]{ }{ =reprovado}}\textbf{ \footnotesize Não Aprovado}}  \\ \hline \hline
+
+			    {\footnotesize \textbf{Professor Responsável}} &  {\footnotesize \imprimirProfessorResponsavel{}} & \imprimirDataAvaliacaoPreTCC{} & \\ \hline
+			    % {\footnotesize \textbf{Orientador}} &  {\footnotesize Prof. Dr. José Luís A. Güntzel} & 14/12/2015 & \\ \hline
+			%\end{small}
+		\end{tabular}
+        \end{Form}
+	}
+	% \afterpage{\null\newpage}
+	\restoregeometry
+	% \endgroup
+	\fontfamily{\familydefault}\selectfont
+}{
+	%else clause
+}
+}
+
+
+
+
+\newcommand{\imprimirdeclaracaodeconcordanciatcc}{
+\ifthenelse{\boolean{isPreTcc}}{%
+
+\phantomsection
+\addcontentsline{toc}{chapter}{Declaração Padrão para Empresa ou Laboratório}
+
+	\chapter*{DECLARAÇÃO PADRÃO PARA EMPRESA OU LABORATÓRIO}
+
+
+\fontfamily{phv}\selectfont
+
+	\begin{snugshade}
+
+	\begin{center}
+	{\textbf{DECLARAÇÃO DE CONCORDÂNCIA COM AS CONDIÇÕES PARA O DESENVOLVIMENTO DO TCC NA INSTITUIÇÃO}}
+	\end{center}
+		
+	\end{snugshade}
+
+	\vspace{10pt}
+
+	\noindent{}Declaro estar ciente das premissas para a realização de Trabalhos de Conclusão de Curso (TCC) de Ciência da Computação e Sistema de In\-for\-ma\-ções da UFSC, particularmente da necessidade de que se o TCC envolver o desenvolvimento de um software ou produto específico (ex: um protocolo, um método computacional, etc.) o código fonte e/ou documentação completa correspondente deverá ser entregue integralmente, como parte integrante do relatório final do TCC. 
+
+	\noindent{}Ciente dessa condição básica, declaro estar de acordo com a realização do TCC identificado pelos dados apresentados a seguir.
+
+	\vspace{20pt}
+
+ 	\begin{center}
+
+
+	% \noindent\resizebox{.9\textwidth}{!}{
+		\begin{tabular}{|l|l|}
+			%\begin{small}
+				\hline
+			    \textbf{Instituição} & \imprimirInstituicaoResponsavelConcordancia{} \\ \hline
+			    \textbf{Nome do Responsável} & \imprimirResponsavelConcordancia{} \\ \hline
+			    \textbf{Cargo/Função} & \imprimirFuncaoResponsavelConcordancia{} \\ \hline
+			    \textbf{Fone de Contato} & \imprimirFoneResponsavelConcordancia{} \\ \hline
+			    \textbf{Acadêmico} & \imprimirautor{} \\ \hline
+			    \textbf{Título do trabalho} & \begin{minipage}{.65\linewidth}\imprimirtitulo{}\end{minipage} \\ \hline
+			    \textbf{Curso} & \imprimircurso{}/INE/UFSC \\ \hline
+			%\end{small}
+		\end{tabular}
+	% }
+	\end{center}
+
+
+
+
+	\vspace{40pt}
+
+	\begin{flushright}
+
+		\imprimirlocal{}, \imprimirdataext{}.
+		
+	\end{flushright}
+
+	\vspace{40pt}
+
+
+	\begin{center}
+	    \parbox{7cm}{
+	    \centering
+	      \rule{6cm}{1pt}\\
+	       \small \textbf{Responsável}\\
+	       \imprimirProfessorResponsavel{}      
+	    }
+		\hfill
+	\end{center}  
+
+	%\critico{colocar campo para local e data}
+
+	%\critico{colocar campo para assinaturado responsável}
+
+%\critico{melhorar formatação deste anexo}
+\fontfamily{\familydefault}\selectfont
+}{}
+}
+
+
+\RequirePackage{datetime}
+
+\newcommand*{\shortmonthnamebrazil}[1][\month]{%
+  \@orgargctr=#1\relax
+  \ifcase\@orgargctr
+  \PackageError{datetime}{Invalid Month number \the\@orgargctr}{Month
+  numbers should go from 1 (jan) to 12 (dec)}%
+  \or jan%
+  \or fev%
+  \or mar%
+  \or abr%
+  \or mai%
+  \or jun%
+  \or jul%
+  \or ago%
+  \or set%
+  \or out%
+  \or nov%
+  \or dez%
+  \else%
+  \PackageError{datetime}%
+  {Invalid Month number \the\@orgargctr}%
+  {Month numbers should go from 1 (jan) to 12 (dec)}%
+\fi
+}

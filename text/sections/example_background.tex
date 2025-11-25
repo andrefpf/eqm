@@ -1,0 +1,234 @@
+%!TEX root = ../main.tex
+
+\chapter{Background and Related Work}
+\label{cap.background}
+
+This chapter presents a brief, yet broad, overview of the background and history of \gls{lf} technology, as well as its current state and ongoing developments.
+The primary goal is to understand where \glspl{lf} fit in the wider context of digital image modalities and representations.
+Naturally, this includes its uses both in academia and in industry, across various applications.
+Furthermore, it also encompasses information about the field of video encoding and compression, discussing evaluation metrics, its relevant algorithms for the scope of this thesis, and more.
+
+\section{Origins and History of Light Field Technology}
+
+\subsection{Early Photometric Theory}
+
+Among the main figures in the historical development of research into light, the first person credited with the successful treatment of light as a quantity, rather than qualitatively, is the French Capuchin Fr. François Marie.
+Nearing the end of the 17th century, he published a treatise about the discovery of a new way to measure light called \textit{Nouvelle de'couverte sur la lumiere, pour la mesurer \& en compter les degrés} (A new discovery on light, for measuring it and its degrees)~\cite{marie1700}.
+This treatise was focused on Fr. François Marie's invention of a device he called the \textit{lucimeter} or \textit{photometer}, which was capable of comparing the intensities of two light sources. 
+His work presented a crucial shift from merely observing light in terms of its qualities, to then being able to provide quantitative and relative measurements about it as a subject. 
+
+Fr. François Marie's work would go on to feature prominently among the bases for Pierre Bouguer's (1698-1758) developments, made in the first half of the 18th century. 
+Bouguer, a French mathematician and prolific scientist who provided foundational work in the field of \textit{photometry}, 
+\footnote{The word \textit{photometry} used in the context of Bouguer's work refers simplistically to the measurement of light by comparing different sources. 
+Gershun would later expand this definition, stating it by means of \textit{light} and \textit{measurement}: by \textit{light} it is meant the entire set of possible radiations, visible or invisible;
+by \textit{measurement}, not only the experimental technique to gather values about the subject of experimentation, but also the wide array of questions associated with those values.  
+Thus, by \textit{photometry} we mean the energy relationships in the emission, propagation, and absorption of radiation.~\cite{gershun36}
+}
+furthered the methodology of light measurements in his \textit{Essai d'optique sur la gradation de la lumière} (Essay on the gradation of light) by projecting the light of two sources against onto a screen, and changing the sources' distances until the shadows cast by certain objects appeared to be of equal darkness~\cite{bouguer1729}.  
+His primary contribution is the formulation of a theory which describes how the intensity of light decreases when it passes through a transparent medium.
+
+While Bouguer laid the important groundwork, it would be Johann Heinrich Lambert (1728–1777) who expanded and refined it through a comprehensive mathematical framework by means of his 1760 publication \textit{Photometria, sive de mensura et gradatione luminis, colorum et umbrae} (Photometry, or on the measurement and gradation of light, colors, and shadows)~\cite{lambert1760}. 
+Lambert provided a systematic view of the laws of photometry, formulating it in a way which is still used today in the realm of computer graphics and vision, with their wide-ranging applications. 
+For instance, Bouguer's aforementioned theory of the intensity of light as it decreases through media came to be known, due to Lambert's contributions, as the Bouguer-Lambert Law (or Absorption Law).
+
+\subsection{Practical Developments and Light Field Formalization}
+
+Despite the significance of these breakthroughs, a nearly 150 year period of relative dormancy would persist in the field of photometry.
+It would not be until the year 1854 that the subject would see another important development, this time through the work of the physicist August Beer (1825-1863). 
+Beer's main contribution was his extension of the aforementioned Absorption Law to also account for the absorbance of light by a solution, which is directly proportional to the concentration of the absorbing substance~\cite{beer1854}.
+Consequently, the modern Absorption Law was named the Beer-Lambert or Beer-Lambert-Bouguer Law. 
+
+A notable practical development then took place in 1908, when the French Nobel laureate Gabriel Lippmann (1845–1921) introduced integral photography, a method for capturing a three-dimensional scene on a single photographic plate~\cite{lippmann1908photographie}.
+His technique used a microlens array to capture a multitude of tiny images, each from a slightly different viewpoint. 
+While developed for creating 3D prints, this method was a direct precursor to modern \gls{lf} cameras, as it successfully recorded not just the intensity and color of light, but also its directional information.
+
+However, this was not enough to satisfy the Soviet physicist Andrey Gershun (1903-1952).
+Frustrated by the long hiatus in the study of photometry, which he considered to be under an "arrested development" if compared to the various other aspects of modern physics, Gershun performed his studies on the measurements of light's propagation in \gls{3d} space.
+Unlike his predecessors, he sought to understand how light operates by means of a \textit{vector} rather than a \textit{scalar} value (i.e. illumination on a surface). 
+Through this vector, he aimed to represent the entire flow of light rays in space, considering both their position and direction.
+Thus, Gershun was the first to instantiate the core principle of a \gls{lf} formally and in terms which could later on be expanded~\cite{gershun36}.
+Though his work was highly theoretical and overlooked for a significant time in the West, it served nonetheless as a cornerstone upon which later generations of physicists and computer scientists would build.
+
+Notably, a breakthrough follow-up to Gershun's research would only come in 1991 with the proposition of the \textit{plenoptic function} by Adelson and Bergen. 
+In their work titled "The Plenoptic Function and Elements of Early Vision", they proposed a mathematical formulation of \gls{lf} representation by a 7-dimensional function which considers the light intensity from every viewpoint (per the possible angles $\theta, \phi$ and position $(Vx, Vy, Vz)$), at every moment $t$, and for every wavelength $\lambda$~\cite{adelson1991plenoptic}:
+
+\begin{equation}
+\label{eq.plenoptic_adelsonbergen}
+P = P(\theta, \phi, \lambda, t, V_x, V_y, V_z)  
+\end{equation}
+
+The authors named this function plenoptic from Latin \textit{plenus}, meaning "complete" or "full", since it describes everything that can be seen.
+
+\subsection{Modern Light Field Cameras}
+
+Though very useful, Adelson and Bergen recognize it as an idealized concept, since one cannot hope to represent a scene through every possible viewpoint, wavelength, and moment of time~\cite{adelson1991plenoptic}.
+Still, theirs would be a major achievement, and just one year later the first plenoptic camera would be described by Adelson and Wang~\cite{adelson1992camera}.
+By inserting a microlens array into a conventional camera, the authors managed to capture the directional information of light.
+Their hardware physically captured the \gls{lf}, thus making it a tangible dataset.
+
+A natural follow up to being able to capture \gls{lf} data is to be able to process them.
+This was first achieved in 1996 by Levoy and Hanrahan through their work titled "Light Field Rendering"~\cite{levoy1996rendering}. 
+Building on the plenoptic function, they showed that the 7-parameter function could be reduced to 4 dimensions, based on the assumption that the radiance remains unaltered along its path unless blocked.
+They proposed a practical parameterization for this new \gls{4d} function by describing light rays as passing through two parallel planes, which could be captured by rendering images from a \gls{2d} grid of camera positions.
+Additionally, it can be said that one of the most important aspects of their work was its simplicity, as new views could then be generated in real time "without depth information or feature matching", simply by "extracting and resampling a slice" of the \gls{4d} function.
+Nonetheless, even at this early stage the authors were already aware of the high amounts of data required to properly represent \gls{lf} images digitally, highlighting the necessity of efficient compression.
+
+With the basis for \gls{lf} processing in place, the next logical step was to make the capture of \gls{lf} images more accessible. 
+This would be achieved by Ren Ng and his colleagues at Stanford University in 2005.
+They provided a significant breakthrough by being the first to produce a hand-held plenoptic camera, which allowed for the capture of \glspl{lf} from a single viewpoint with a single exposure~\cite{ng05camera}.
+Consequently, their study allowed for the newfound commercialization of the technology, which was previously sequestered for the sole interest of academics. 
+
+Perhaps the most well-known example of their foundational work being applied in the industry came about with the Lytro company and their plenoptic cameras, which were recognized as "the first implementation of a plenoptic camera for the consumer market"~\cite{lytro2013}. 
+
+\section{The JPEG Pleno Model Reference Software (JPLM)}
+
+The \gls{jplm} reference software is the practical implementation of the JPEG Pleno standard, outlined in the Part 4 of the standard~\cite{plenoJPLM}. 
+The primary goal of this addition to the JPEG Pleno standard is to provide guidance for those implementing encoder and decoder steps mainly based on Parts 1 and 2~\cite{plenoFramework, plenoLightfield}. 
+Its development also provides a basis for the conformance testing methodology outlined in Part 3 of the standard~\cite{plenoConformanceTesting}.
+Such a methodology enables checking whether a given application conforms with JPEG Pleno. 
+Moreover, the \gls{jplm} is further devised with the intent of propagating the adoption of the standard, ensuring that it has a robust reference as basis from which to grow. 
+
+However, the \gls{jplm} has been designed with mostly maintainability and extensibility in mind, so as to accommodate possible future changes and amendments, rather than performance and efficiency~\cite{plenoReferenceSoftware}.
+Nonetheless, an efficient reference software could prove itself even better for the standard's adoption, as it would ensure developers that a highly performant solution can exist, thereby enabling their use case.
+Therefore, the following sections offer first a brief exposition about the reference software and how its most important aspects work, followed by performance evaluations and profilling observations made thereupon.
+
+\subsection{Brief Overview}
+
+The \gls{jplm} reference software works on \gls{jpl} files, which are containers encapsulating the plenoptic modalities, such as \glspl{lf}, \glspl{pc}, and holograms, as well as any metadata associated with them.
+Conceptually, \gls{jpl} files provide some simplifications in the representation of \glspl{lf} such that they can be implementations of the plenoptic function containing 4 dimensions, instead of 7. 
+Consequently, \glspl{lf} represented by means of \gls{jpl} files contain the \gls{2d} spatial information about the subject, and also the \gls{2d} distribution of light in those spaces through their angles~\cite{fernandes2025paralleljplm}.
+This file format was the focus of JPEG Pleno Part 1 - Framework~\cite{plenoFramework}.
+The software, upon receiving a \gls{jpl} file for input, extracts from it its corresponding modality, and operates on it accordingly. 
+
+The system of \gls{lf} encoding and decoding involves many processing steps, which follow sequentially one after the other.
+The conjunction of these steps is called the \gls{4dtm}, and it describes the core functionality of the \gls{jplm}, without which compression would not be possible. 
+An overview of the interconnected components of the \gls{4dtm} is displayed below in \cref{fig.4dtm}, followed by the relevant explanations.
+
+\usetikzlibrary{arrows.meta}
+\definecolor{darkblue}{HTML}{191970}
+\begin{figure}[!tb]
+\centering
+\caption{Simplified flow of the \gls{4dtm} codec.}
+\resizebox{.75\linewidth}{!}{
+\begin{tikzpicture}[scale=0.6, node distance=.45cm and .5cm]
+\tikzstyle{box} = [minimum height=1.2cm, text width=1.5cm, font=\scriptsize, align=center, draw, inner ysep = 0mm]
+    \node[box] (partitioning) {4D Block Partitioning};
+    \node[left=of partitioning] (raw) {Input LF};
+    \node[box, right=of partitioning] (dct) {4D DCT};
+    \node[box, right=of dct, text width=2.5cm] (bitplane) {Bitplane Hexadeca-tree decomposition};
+    \node[box, right=of bitplane] (abac) {Arithmetic Encoding};
+     \node[box, minimum height=.75cm, text width=4.5cm, below=of abac.south east, anchor=north east] (jpl) {JPEG Pleno File Format (.jpl)};
+     \node[box, below=8mm of jpl.east, anchor=north east] (abacd) {Arithmetic Decoding};
+     \node[box, left=of abacd] (partitioningDec) {4D Block Partitioning Decoding};
+     \node[box, left=of partitioningDec, text width=2.5cm] (bitplaneDec) {Bitplane Hexadeca-tree decoding};
+     \node[box, left=of bitplaneDec] (idct) {4D IDCT};
+    \node[left=of idct, text width=1.2cm, align=center] (dec) {Decoded\\LF};
+    % \node[box, below=of jpl.south east, anchor=north east] (iabac) {Arithmetic Decoding};
+    % \node[box] (ipart) at (iabac -| bitplane){Partition Decoding};
+    % \node[box] (ibit) at (iabac -| dct) {Bit-plane Hexadeca-tree decoding};
+    % \node[box] (idct) at (iabac -| partitioning) {4D IDCT};
+
+    \draw[line width=1mm, dashed] (jpl) -- node[above, anchor=south west, pos=.9] {\gls{4dtm} Encoder} node[below, anchor=north west, pos=.9] {\gls{4dtm} Decoder} (jpl -| raw.west); % ($(partitioning.south west)!.5!(idct.north west)$) ; % node[below, anchor=north west] {Decoder};
+
+    \draw[-{Latex}, ultra thick, darkblue] (partitioning) -- (dct);
+    \draw[-{Latex}, ultra thick, darkblue] (dct) -- (bitplane);
+    \draw[-{Latex}, ultra thick, darkblue] (bitplane) -- (abac);
+    \draw[-{Latex}, ultra thick, darkblue] (abac) -- (jpl.north -| abac);
+    \draw[-{Latex}, ultra thick, darkblue] (jpl.south -| abacd) --  (abacd);
+    \draw[-{Latex}, ultra thick, darkblue] (abacd) --  (partitioningDec);
+    \draw[-{Latex}, ultra thick, darkblue] (partitioningDec) --  (bitplaneDec);
+    \draw[-{Latex}, ultra thick, darkblue] (bitplaneDec) --  (idct);
+    \draw[-{Latex}, ultra thick, darkblue] (idct) --  (dec);
+
+    
+    % \node[below=of idct] (decoded) {Decoded LF};
+
+    \draw[-{Latex}, ultra thick, darkblue] (raw) --  (partitioning);
+    % \draw[-{Latex}, ultra thick, darkblue] (idct) --  (decoded);
+    
+\end{tikzpicture}
+}
+\fonte{adapted from~\citeonline{fernandes2025paralleljplm}.}
+\label{fig.4dtm}
+\end{figure}
+
+\subsubsection{4D Block Partitioning}
+
+The first step of the encoding pipeline divides the \gls{jpl} file into multiple different blocks, still in \gls{4d} space.
+This pre-processing step is important to optimize the results of the following \gls{4dtm} procedure, since the output of block partitioning are various blocks which can be independently encoded to generate valid bitstreams. 
+Naturally, this aspect of the partitioning step provides a natural opportunity for extensive parallelization, which has been explored in~\citeonline{seidel2025paralleljplm}.
+Furthermore, this decision also allows for the random access of blocks in the decoder side~\cite{4d_codec}.
+
+The \gls{jplm} allows for two ways to partition the \glspl{lf} into non-overlapping blocks.
+The first pertains to the maximum block size, and it is configurable. 
+The second is more dynamic and attempts to optimize the computation of \glspl{4ddct} in terms of size.
+The latter bases its decisions on the \gls{rd} metric of the resulting subpartitions~\cite{plenoLightfield}.
+
+\subsubsection{4D DCT}
+
+The \gls{dct}, as originally introduced by~\citeonline{ahmed74dct} and extensively formalized by~\citeonline{raoDCT}, is a widely used signal transformation technique known for its ability to concentrate the energy of a signal into a small number of significant coefficients.
+In image and video coding, this property enables effective compression by reducing the importance of high-frequency components that are perceptually less relevant.
+
+The \gls{dct} is a separable procedure, meaning that multi-dimensional versions of the transform can be efficiently constructed by applying the one-dimensional \gls{dct} successively along each axis of the data array.
+Similarly, the \gls{4ddct} works as one such extension, where the \gls{dct} is applied along four axes: the two spatial dimensions and the two angular ones.
+Therefore, this separable \gls{4ddct} captures both spatial patterns within individual views and angular coherence across adjacent viewpoints~\cite{astola2020jpeg}.
+
+By transforming the \gls{lf} data into the frequency domain along all four dimensions, the \gls{4ddct} compacts the energy into a few low-frequency coefficients, which have high magnitudes (i.e. they represent important parts of the image), making it possible to discard many high-frequency components, which have low magnitudes (i.e. they represent visual noise or imperceptible details), without significant visual quality loss.
+Said exclusion of the high-frequency components is achieved during the sub-process of \textit{quantization}, whereby the coefficients are divided by a \textit{step size}, thus eliminating the greater part of the high-frequency components with the low-frequency ones surviving, albeit at a controlled precision loss. 
+This energy compaction capability is crucial for achieving high compression efficiency in the \gls{4dtm}.
+
+
+\subsubsection{Bitplane Hexadeca-tree Decomposition}
+
+Next, the hexadecatree decomposition step operates directly on the quantized coefficients of the \gls{4ddct} with the goal of segmenting the \gls{4d} coefficient block recursively along its four dimensions. 
+This procedure clusters regions of the block based on whether the coefficients are significant (non-zero) or insignificant (encoded as zeros).
+Within each step of the process, the block is split into 16 sub-blocks (hence the name "hexadecatree").
+Thus, the important information is efficiently localized and compression is achieved with minimal distortion, hence achieving great encoding efficiency~\cite{4d_codec}.
+
+One important aspect of this technique is that, during the recursive process, a ternary flag is chosen out of a set of three for each segment of the 1D array resulting fro the coefficients scanning. 
+The three possibilities of ternary flags are listed and explained below~\cite{4d_codec}:
+
+\begin{itemize}
+\item \texttt{splitBlock}: The segment has a significant coefficient in the current bitplane, it will be split into two; \
+\item \texttt{lowerBitplane}: The segment does not have a significant coefficient, the bitplane is decreased without splitting the segment; \
+\item \texttt{zeroBlock}: The segment has at least one significant coefficient in the current bitplane, but will be discarded and not split \
+\end{itemize}
+
+\subsubsection{Arithmetic Encoding}
+
+Next, a technique called \textit{entropy encoding} is applied into the quantized set of coefficients as processed by the previous step, together with their respective ternary flags.
+The main idea of entropy encoding is to compact the available information by their relative frequencies of appearance in the input: rare symbols are encoded using longer sequences, while more frequent ones use shorter sequences.
+Specifically, in the context of \gls{jplm}, an encoder known as the \gls{abac} is used.
+This encoder uses a probabilistic model which is updated as the input is being processed, which increases the overall efficiency as more bytes are processed.
+Moreover, it is important to note that the structure of the hexadecatree is preserved in the encoded output~\cite{4d_codec}.
+Therefore, \gls{abac} produces a highly compacted bitstream, and it is this bitstream which composes the final output of the encoding part of the \gls{4dtm}, contained in a \gls{jpl} file as per the JPEG Pleno Part 1 specification~\cite{plenoFramework}.
+
+\subsubsection{Decoding Functionalities}
+
+With the output bitstream of the encoding process in the \gls{jpl} file format, \glspl{lf} can efficiently be stored and distributed by various means. 
+However, the bitstreams would still need to be decoded in order to be useful e.g. in displays.
+Consequently, a robust decoding pipeline is specified and implemented adjunct to the encoding parts of the \gls{4dtm}.
+
+The main decoding steps available are shown in the bottom half of \cref{fig.4dtm}.
+Though slightly different, these processes are largely the inverse of the processes found in the encoding half, since the decoding procedure seeks to reconstruct the original \gls{lf} based on the provided bitstream. 
+For instance, the \gls{4d} Block Partitioning Decoding step processes the clusterings of coefficients through which individual blocks are encoded, and subsequently decodes them into their hexadecatree formats for further reconstruction of the original. 
+Accordingly, due to these similarities of function and operation, in-depth descriptions of individual decoding steps are omitted in this manuscript. 
+
+
+
+\section{CPU Hardware Acceleration Techniques - SIMD}
+
+\gls{simd} refers to a class of parallel computing techniques wherein a single instruction is executed simultaneously across multiple data points.
+This approach leverages the data-level parallelism naturally present in many computational problems, particularly those involving large arrays or matrices, by processing multiple elements in parallel within a single CPU instruction cycle~\cite{Patterson2021-gk}.
+
+Modern CPU architectures integrate \gls{simd} through specialized hardware units and instruction sets, such as Intel's \gls{sse-intel} and \gls{avx}, or their equivalents in ARM and other architectures.
+These units operate on vector registers, allowing for the simultaneous execution of arithmetic or logical operations over entire vectors of data rather than scalar values alone.
+As such, the effective throughput of the processor can be significantly increased when \gls{simd} instructions are employed, provided the algorithm exhibits sufficient data parallelism.
+
+In the context of image and video compression, \gls{simd} vectorization has been extensively explored and implemented to accelerate the most computationally intensive steps, particularly those involving transform coding, prediction, and filtering.
+A prominent example is the \gls{vvc} standard, where \gls{simd} instructions play a crucial role in accelerating both encoding and decoding pipelines~\cite{bross2021}.
+Within \gls{vvc}, operations such as the \gls{dct}, \gls{idct}, and intra-prediction filtering are often vectorized using \gls{simd} to meet the real-time processing demands of modern video applications.
+
+Given that the \gls{4dtm} of JPEG Pleno exhibits high computational complexity, especially in its \gls{4ddct} step, and operates over large, multi-dimensional data structures, it is a natural candidate for \gls{simd}-based optimizations.
+By exploiting the data-level parallelism inherent to the \gls{4ddct} and associated operations, this work investigates the application of \gls{simd} techniques to reduce execution times and improve the overall efficiency of the \gls{jplm} reference software.
+

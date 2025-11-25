@@ -1,0 +1,113 @@
+\chapter{Exploratory analysis}
+\label{ch.exploratory_analysis}
+
+To improve the \gls{4dtm} codification efficiency without affecting its random access properties, which enables the huge parallelization gains discussed earlier, an analysis was conducted to find which parts of the codification demands more rate on a block basis.
+
+Finding the rate spent on each part of the encoding process is not trivial.
+Even though we know how to represent each flag and coefficient using bits, these bits will pass through the arithmetic encoder, which explores the entropy of this data to reduce the rate even further.
+Also, it is not possible to directly associate the entities encoded with regions of the output, because a single bitstream is used for all flags and coefficients, only the probability contexts are changed during the codification. 
+It means that a single bit in the output might be related to more than one flag and coefficient.
+
+Despite that, since modern arithmetic codecs are so efficient, their output rate is close to the theoretical optimum. 
+This optimum value is obtained by computing the Shannon entropy of the data, as shown in \cref{eq.entropy}, where $\chi = [0, 1]$ are the units of information, and $p(x)$ denotes the probability of occurrence of a bit \cite{theory_of_communication_1948_shannon}.
+Because an adaptive arithmetic codec is used in JPEG Pleno, the probabilities change after the codification of each bit, therefore the rate estimative need to be updated one bit at a time.
+It can be done, in an equivalent way, using the self-referential expectation for each bit, a concept derived from Shannon theory that can be computed as $I(x) = -log_2(p(x))$ \cite{information_theory_1999_cover}.
+This procedure is already used in the encoder to estimate on the fly the rate spent on each operation so it can choose the encoding options according to an \gls{rd} criteria, and results in very precise estimations.
+
+\begin{align}
+    \label{eq.entropy}
+    H(x) = -\sum_{x \in \chi} p(x) \times log_2(p(x))
+\end{align}
+
+\Cref{fig.rate_distribution.lenslets} presents the proportion of the rate used to represent each part of the codification, according to these estimators.
+The two categories that spends most data are the Coefficients and the Hierarchical Flags, alternating their dominance according to the rate targeted.
+An interesting thing to notice is that the Others category increases with lower target rates. 
+This category includes data of fixed size that are useful to manage the blocks, such as the inferior bitplane, \gls{sob} markers, etc.
+The size only seem to be growing because of the huge difference between the target bitrates.
+Although the Signs also use a fair amount of data, it is reasonable to concentrate the effort on the two most complex categories that uses almost 83\% of the total rate.
+
+\begin{figure}[!htb]
+    \centering
+    \includegraphics[width=0.6\linewidth]{text/imgs/4dtm_analysis/lenslets/rate_distribution.pdf}
+    \caption{Caption}
+    \label{fig.rate_distribution.lenslets}
+\end{figure}
+
+Both of these categories can also be further segmented to identify improvement opportunities.
+As shown in \cref{fig.rate_distribution_hierarchical_flags.lenslets}, the Hierarchical flags can be divided in three sub-categories, one for the occurrence of each flag.
+The proportion of the flags S and Z change considerably across target rates, but the L flags percentage is much more stable.
+It means that improvements on the L flags could be perceived across all target rates.
+One possible way to reduce the number of L flags, and therefore minimize its impact on the rate, is to predict the bitplane sizes according to typical \gls{dct} distributions, and only encode the residues.
+
+For the coefficients, there are not any obvious way to segment this category, so a bit more effort is needed to analyze this group.
+As explained on \cref{sec.jpeg_pleno_part_2}, the hexadecatree codification works recursively, and one of the stopping criteria is that the blocks can not be further divided, i.e. they are unitary blocks.
+This criteria is an implicit way to represent where are the leafs of the tree, and therefore avoid spending rate signaling it.
+Although it is effective, there are many unitary blocks that could not be zeroed by the Z flag, so these zeros are encoded as if they were a typical coefficient.
+There are also cases where one coefficient a block is much bigger than their neighbors, so after splitting in their unitary components, the L flag can not be used anymore, so there is a mismatch between the number of bits needed to represent a coefficient, and the number of bit actually used.
+
+\Cref{fig.rate_distribution_coefficients.lenslets} shows the proportion between coefficients encoded full of zeros, the ones encoded with more bits than needed, and correctly encoded coefficients.
+All of these categories remain steady across all bitrates, meaning that the codification of unnecessary bits represent more than 30\% of the coefficients rate.
+It is interesting to note that the same idea mentioned to reduce the number of L flags, could also minimize the number of unnecessary bits, since they are caused primarily by neighbors with high bitplane differences.
+
+\begin{figure}[!htb]
+    \centering
+
+    \subfloat[\label{fig.rate_distribution_hierarchical_flags.lenslets}]{%
+        \includegraphics[width=0.5\linewidth]{text/imgs/4dtm_analysis/lenslets/rate_distribution_hierarchical_flags.pdf}
+    }
+    \subfloat[\label{fig.rate_distribution_coefficients.lenslets}]{%
+        \includegraphics[width=0.5\linewidth]{text/imgs/4dtm_analysis/lenslets/rate_distribution_coefficients.pdf}
+    }
+
+    \caption{Caption}
+\end{figure}
+
+% {\color{red}
+
+% Looking only to the estimated final rate is important, but might be misleading if a suboptimal bit representation or probability context was selected.
+% To verify these instances, \cref{fig.bits_by_bitplane.lenslets} shows the number of bits used to represent the flags and coefficients before the arithmetic coding.
+% The data is separated by bitplanes, because each coefficient bit is encoded in a different context, and the context used by each flag depends on the maximum bitplane of the block being encoded.
+
+% A characteristic that is first noticeable is the narrow range of bitplanes used.
+% It is expected, since the encoder discards all bits which are under a lower bitplane threshold selected according to an \gls{rd} criteria.
+% Another trend that can be observed is that, for bigger target rates, most of the bits encoded represent small magnitude coefficients.
+% However, this predominance decreases as the target rate is reduced.
+% At the same time, the number of zero flags increases for lower target rates.
+% These two behaviors are closely related, since the zero flags are probably being used to suppress the least significant bits.
+
+% Looking only to the flags it is noticeable that the proportion of each flag type changes considerably across bitplanes and target rates.
+% In general, the Z flags are dominant, specially considering that it is represented with only one bit instead of two, as the other flags.
+% It suggests that using the first bit of the codification to encode the Z flags was a right choice.
+% Another 
+
+% \begin{itemize}
+%     \item Acho que nem faz mais sentido a história de trocar a representação das flags.
+
+%     \item Esse gráfico separado por bitplane tá meio esquisito, vou ignorar ele por enquanto.
+% \end{itemize}
+% }
+
+
+% \begin{figure}[!htb]
+%     \centering
+
+%     \subfloat[\label{fig.bits_by_bitplane.lenslets.0.75}]{%
+%         \includegraphics[width=\linewidth]{text/imgs/4dtm_analysis/lenslets/bitplane_distribution_at_0.75.pdf}
+%     }
+    
+%     \subfloat[\label{fig.bits_by_bitplane.lenslets.0.1}]{%
+%         \includegraphics[width=\linewidth]{text/imgs/4dtm_analysis/lenslets/bitplane_distribution_at_0.1.pdf}
+%     }    
+
+%     \subfloat[\label{fig.bits_by_bitplane.lenslets.0.02}]{%
+%         \includegraphics[width=\linewidth]{text/imgs/4dtm_analysis/lenslets/bitplane_distribution_at_0.02.pdf}
+%     }
+    
+%     \subfloat[\label{fig.bits_by_bitplane.lenslets.0.005}]{%
+%         \includegraphics[width=\linewidth]{text/imgs/4dtm_analysis/lenslets/bitplane_distribution_at_0.005.pdf}
+%     }
+
+%     \caption{Caption}
+%     \label{fig.bits_by_bitplane.lenslets}
+
+% \end{figure}

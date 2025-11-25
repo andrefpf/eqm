@@ -1,0 +1,92 @@
+\chapter{Introduction}
+\label{ch.introduction}
+
+A \gls{lf} is an image modality used to represent the behavior of the light within a scene. 
+Conceptually, it is similar to a 2D image.
+However, instead of capturing only the intensity of incoming light rays, a \gls{lf} also represents their angular direction \cite{}.
+These characteristics make light fields suitable for a wide range of applications, from immersive visualization systems to scientific and industrial domains, such as microscopy, metrology, and quality inspection \cite{}.
+
+Recording angular information is important for these applications because it enables operations that are not easily achievable with traditional bi-dimensional images.
+Among the most notable features are the ability to control the focus of the image after its capture, the extraction of accurate depth maps, and even the possibility of changing the viewing perspective, which when combined with specialized displays can produce highly immersive experiences.
+
+By definition, \glspl{lf} are a simplification of the plenoptic function, which is a conceptual model, introduced by \citeonline{} to encode all the light information present in a given scene.
+The plenoptic function is defined as $P: \reals^7 \to \reals$, with parameters $P(\theta, \phi, Vx, Vy, Vz, t, \lambda)$, where $(\theta, \phi)$ correspond to azimuth and elevation angles of the incoming light ray, respectively; $(Vx, Vy, Vz)$ denotes observer's position in 3D space; $t$ is a given moment in time; and $\lambda$ is the wavelength of the incident light;
+
+Given the difficulty of capturing such a complex representation of light in a real-world scenario, \glspl{lf} are designed to simplify this function from seven to only four dimensions.
+Although dynamic \glspl{lf} exists, this work only addresses exclusively static light fields. 
+In this case, the temporal parameter $t$ is constant, and can be omitted, resulting in a function of six dimensions $P(\theta, \phi, Vx, Vy, Vz, \lambda)$.
+Similarly, if we assume that the scene is free of occlusions, the $Vz$ parameter can also be disregarded, since the same scene is observed regardless of its value.
+Finally, since the human visual system relies on three types of cone cells to perceive colors, any visible color can be represented with only three fixed wavelengths.
+
+After these simplifications, a \gls{lf} is defined as a function $L: \reals^4 \to \reals$ expressed as $L(\theta, \phi, Vx, Vy)$.
+Throughout this work, we will use the notation $L(t, s, v, u)$, which is more common in the literature.
+Since it is usually hard to reason about four dimensional data, a \gls{lf} is typically interpreted as a two-dimensional matrix of angles (indexed by $t$ and $s$), while each angle is associated with another two-dimensional matrix (indexed by $v$ and $u$), representing an image of the scene seen from that direction.
+Each of these images is referred to as a view.
+
+A similar reasoning can be extended to other types of media, which can be seen as different simplifications of the plenoptic function.
+Building on these similarities, the \gls{jpeg} Organization started an effort to represent and compress some of these plenoptic based modalities within a unified family of standards, known as JPEG Pleno.
+Specifically, JPEG Pleno focuses on Light Fields, Point Clouds and Holography.
+
+An important requirement of such a standard, specially on the context of \glspl{lf}, is to reduce the amount of data required to represent this type of media.
+Because a \glspl{lf}, by definition, consists of pixels arranged in four dimensions, even basic captures with sufficient resolution can occupy an impractically large amount of memory in raw form.
+For example, in the \gls{lf} named "Set2 2K sub" from the JPEG Pleno \gls{ctc}, each view has a resolution of $1920\times1080$ pixels, and has $33\times11$ views, requiring a 2.62 GiB of memory.
+Even so, this \gls{lf} is already a reduced version of the original capture, which featured $3840\times2160$ pixels and $101\times21$ views, resulting in 61.44 GiB.
+
+At the time of this writing, the Part 2 of the standard, dedicated to the representation of \glspl{lf}, contains two modes of encoding, namely \gls{4dpm} and \gls{4dtm}.
+The first of these methods, \gls{4dpm}, is based on a technique that resembles the inter frame prediction step used in video codecs.
+Different from the video use case though, this mode demands a depth map to be able to make its prediction.
+In short, the reference neighbor views are warped, according to the depth map, to estimate how they should look like in the position of the target view.
+Then, the best part of each reference view is selected and merged together.
+Subsequently, the residues between the original and predicted views are encoded separately.
+After each step, the predicted views can then be used hierarchically as references to predict other views until the whole \gls{lf} is encoded.
+
+For \glspl{lf} with larger baseline, i.e. when the difference between neighbor views is bigger, the \gls{4dpm} performs considerably well.
+This scenario is more common for \glspl{lf} captured using \glspl{hdca}.
+Nevertheless, when the baseline is smaller, such as on \glspl{lf} captured on lenslet cameras, the coding performance degrades considerably.
+Furthermore, the requirement of including a depth map as input for the model, without specifying ways to do so, make this mode less appealing.
+
+On the other hand, \gls{4dtm} does not require any additional data besides the \gls{lf} itself.
+It is also considerably better on the encoding of small baseline \glspl{lf}, even though the performance with bigger baselines is reduced.
+As the name suggests, this mode is based on a transform step, following a procedure that is very similar to 2D image codecs, but extended to four dimensions.
+First the \gls{lf} is segmented in multiple blocks of the same size (except possibly on the borders).
+Each of these blocks can be subdivided either in the views or in the angles, according to some \gls{rd} criteria.
+After the subdivisions, each block passes through a 4D \gls{dct}, which represents the blocks on the frequency domain.
+The transformed blocks are then represented as a sequence of flags and coefficients arranged as a hexadecatree, exploring some useful properties of the \gls{dct}.
+Since \gls{4dtm} is the target of this work, it will be further detailed along the text, specially on \cref{sec.jpeg_pleno_part_2}.
+
+Despite being so effective on small baseline \glspl{lf}, exploratory analysis over the rate spent on different parts of the \gls{4dtm} codec suggested that there are still room for improvement.
+These concerns are mainly focused on the amount of flags needed to indicate the location and number of bits necessary to encode non zero coefficients.
+Not only these flags require a considerable proportion of the total rate, 
+but there are also many false positives.
+Between all the rate spent to encode the coefficients, about 30\% of it is being used on bits that are not actually necessary, in which a big part of them are completely zeroed.
+
+
+\section{Objectives}
+\label{sec.objectives}
+
+% Nem ideia se chama assim mesmo
+\subsection{General Objective}
+\label{subsec.general_objectives}
+
+The main objective of this work is to improve the coding efficiency of the \gls{4dtm} codec defined on the standard JPEG Pleno Part 2, focusing primarily on the hexadeca-tree representation of the 4D \gls{dct} coefficients.
+
+\subsection{Specific Objectives}
+\label{subsec.specific_objectives}
+
+\begin{itemize}
+    \item Perform a detailed analysis on the main problems of the \gls{4dtm} codec in terms of coding efficiency; 
+
+    \item Propose solutions to address the main weakness found in \gls{4dtm};
+
+    \item Compare the performance of all proposed modifications in terms of rate-distortion;
+
+    \item Compare the encoding time of all proposed modifications;
+
+    \item Compare the memory usage of all proposed modifications;
+    
+\end{itemize}
+
+\section{Organization}
+\label{sec.organization}
+
+This work is organized as follows. Chapter ... 

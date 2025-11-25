@@ -1,0 +1,28 @@
+%!TEX root = ../main.tex
+
+\pretextual
+
+% capa e ficha catalográfica
+\input{pretextual/capa_ficha}
+
+\ifthenelse{\boolean{isPreTcc} \or \boolean{isTccI} }{%
+}{%
+	% dedicatoria
+	\input{pretextual/dedicatoria}
+
+	% agradecimentos
+	\input{pretextual/agradecimentos}
+
+	% epigrafe
+	\input{pretextual/epigrafe}	
+}
+
+
+\imprimirfolhadeaprovacaodeproposta%
+
+
+% resumo
+\input{pretextual/resumo}
+
+% listas
+\input{pretextual/listas}

@@ -1,0 +1,124 @@
+\chapter{Evaluation method}
+\label{ch.evaluation_method}
+
+To evaluate the modifications implemented as part of this work, it is essential to use meaningful metrics and apply them over a representative dataset.
+Fortunately, JPEG Pleno Part 2 provides a \gls{ctc} so researchers can reliably test their work.
+This \gls{ctc} document includes a dataset with a variety of characteristics that may be found on real world scenarios.
+It also includes quality metrics, target bitrates for each \gls{lf}, nomenclature conventions and even a baseline codification method.
+This section is dedicated to summarize the main aspects of the \gls{ctc} that will be used in this work.
+
+An important consideration among the \gls{ctc} used is that JPEG Pleno Committee is currently developing a new document, which updates many small issues present in the previous version.
+Although the updated \gls{ctc} was not yet published at the time of this writing, we decided on using its updates in advance, so we avoid making our experiments out of date whey it is published.
+
+
+\section{Light Field Dataset}
+\label{sec.ctc_dataset}
+
+To make a representative dataset many aspects need to be considered.
+Among them we can list a wide range of resolutions, multiple color depth, different acquisition methods and scenes containing a diverse set of geometry and textures.
+All the \glspl{lf}, regardless of the original acquisition method, are available as a set of RGB colored views in the \gls{ppm} file format, and contain a depth map encoded as a \gls{pgm} image.
+These \glspl{lf} are usually grouped as lenslets, synthetic and HDCA.
+
+The lenslets group consists in four \glspl{lf} named ``Bikes'', ``Danger de Mort'', ``Fountain\&Vincent 2'' and ``Stone Pillars Outside''. 
+These \glspl{lf} were captured using a Lenslet Lytro Illum camera, with a spacial resolution of $625\times434$ pixels per view, and angular resolution of $15\times15$ views.
+Because of lens aberrations present on peripheral views, some of them need to be discarded.
+Initially the $13\times13$ central views were used, but according to the new \gls{ctc} version, we are only using the central $11\times11$ views.
+The color depth of this \gls{lf} is of 10 bits per sample.
+\Cref{fig.ctc_central_views.lenslets} shows the central views of each \gls{lf} in the lenslets group.
+
+\begin{figure}[!htb]
+    \centering
+    \label{fig.ctc_lenslets}
+
+    \subfloat[Bikes]{
+    \includegraphics[width=.45\linewidth]{text/imgs/ctc/Bikes.png}}
+    \quad
+    \subfloat[Danger de Mort]{
+    \includegraphics[width=.45\linewidth]{text/imgs/ctc/Danger_de_Mort.png}}
+    
+    \subfloat[Fountain\&Vincent 2]{
+    \includegraphics[width=.45\linewidth]{text/imgs/ctc/Fountain_Vincent2.png}}
+    \quad
+    \subfloat[Stone Pillars Outside]{
+    \includegraphics[width=.45\linewidth]{text/imgs/ctc/Stone_Pillars_Outside.png}}
+\end{figure}
+
+While all the data from the lenslets groups are very similar, the \gls{hdca} \glspl{lf} are much more heterogeneous.
+Each one of the three \glspl{lf} in this group comes from a different source.
+The first one, ``Set2 2K sub'' comes from the Fraunhofer \gls{hdca}, and represents a collection of miscellaneous objects disposed over a table.
+Although the resolution of $1920\times1080$ pixels per view with $33\times11$ views is much higher than all the lenslets, this is actually a subsample of a $3840\times2160$ pixels per view and $101\times21$ views \gls{lf}.
+Such a high resolution \gls{lf} was captured using a 2D camera combined with a gantry, that automatically captured multiple views spaced 4 mm vertically and 6 mm horizontally.
+This method of acquisition is only possible when the target object stay static for the whole duration of the capture.
+The color depth of this \gls{lf} is also of 10 bits per sample.
+
+Another high resolution \gls{lf} from this dataset is the ``Poznan Laboratory 1'', which depicts a laboratory with a few computers, some equipments and 2D patters positioned at different depths.
+This exemplar has a resolution of $1936\times1288$ pixels on each view and contains $31\times31$ views, with 8 bits of color depth per sample.
+It was obtained from the Poznan \gls{hdca}, using a camera array arranged with vertical and horizontal spacement of 10 mm.
+
+The last \gls{hdca} \gls{lf} is the ``Tarot Cards'', captured using the Stanford \gls{hdca}.
+It depicts a scene containing multiple spread tarot cards with a glass ball in the center, which combines complex textures and lighting.
+This \gls{lf} has a resolution of $1024\times1024$ pixels per view, $17x17$ views and uses 8 bits per sample.
+A central view of all \gls{hdca} \glspl{lf} of the \gls{ctc} are represented on \cref{fig.ctc_hdca}, 
+
+\begin{figure}[!htb]
+    \centering
+    \label{fig.ctc_hdca}
+
+    \subfloat[Set2 2k sub]{
+    \includegraphics[width=.75\linewidth]{text/imgs/ctc/Set2.png}}
+    
+    \subfloat[Poznan Laboratory 1]{
+    \includegraphics[width=.53\linewidth]{text/imgs/ctc/Poznlab1.png}}
+    \quad
+    \subfloat[Tarot Cards]{
+    \includegraphics[width=.35\linewidth]{text/imgs/ctc/Tarot.png}}
+
+\end{figure}
+
+Besides all of these real world captures, there are also \glspl{lf} artificially generated in this \gls{ctc} dataset, which form the synthetic group.
+It is composed by two \glspl{lf}, named ``Greek'' and ``Sideboard'', which respectively depicts two greek busts and a home furniture.
+Both of them where generated by the Heidelberg Collaboratory with a resolution of $512\times512$ pixels per view and $9\times9$ views, with color depth of 8 bits per sample.
+A central view of each synthetic \glspl{lf} is presented in \cref{fig.ctc_synthetic}.
+
+\begin{figure}[!htb]
+    \centering
+    \label{fig.ctc_synthetic}
+    \subfloat[Greek]{
+    \includegraphics[width=.35\linewidth]{text/imgs/ctc/Greek.png}}
+    \quad
+    \subfloat[Sideboard]{
+    \includegraphics[width=.35\linewidth]{text/imgs/ctc/Sideboard.png}}
+\end{figure}
+
+
+\section{Metrics}
+\label{sec.ctc_metrics}
+
+\begin{equation}
+\label{eqn.sse}
+    \begin{aligned}
+    SSE(I, I') = \sum _{i=0} ^{N-1} \left( I(i) - I'(i) \right) ^2
+    \end{aligned}
+\end{equation}
+
+\begin{equation}
+\label{eqn.mse}
+    \begin{aligned}
+    MSE(I, I') = \frac{1}{N} \sum _{i=0} ^{N-1} \left( I(i) - I'(i) \right) ^2
+    \end{aligned}
+\end{equation}
+
+\begin{equation}
+\label{eqn.psnr}
+    \begin{aligned}
+    PSNR(I, I') = 10\times log_{10}\left(\frac{max\_value^2}{MSE(I, I')}\right)
+    \end{aligned}
+\end{equation}
+
+{\color{red}
+    Explicar cada parte.
+}
+
+
+\section{4DTM Configuration}
+\label{sec.4dtm_configuration}

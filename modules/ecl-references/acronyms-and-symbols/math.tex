@@ -1,0 +1,137 @@
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+\newtheoremstyle{break}
+  {\topsep}{\topsep}%
+  {\itshape}{}%
+  {\bfseries}{}%
+  {\newline}{}%
+\theoremstyle{break}
+
+%\newtheorem{theorem}{{Theorem}}
+%\newtheorem{property}{Property}
+\newtheorem{theorem}{Theorem}
+\newtheorem{property}{Property}
+% \theoremstyle{definition}
+\newtheorem{definition}{Definition} %[section] % definition numbers are dependent on theorem numbers
+
+
+\DeclareMathAlphabet{\mathcal}{OMS}{cmsy}{m}{n}
+\DeclareMathAlphabet{\mathbfcal}{OMS}{cmsy}{b}{n}
+
+\renewcommand\qedsymbol{$\blacksquare$}
+
+\makeatletter
+\renewcommand*\env@matrix[1][*\c@MaxMatrixCols c]{%
+  \hskip -\arraycolsep
+  \let\@ifnextchar\new@ifnextchar
+  \array{#1}}
+\makeatother
+
+\newcommand*\BitAnd{\mathrel{\&}}
+\newcommand*\BitOr{\mathrel{|}}
+\newcommand*\ShiftLeft{\ensuremath{\ll}}
+\newcommand*\ShiftRight{\ensuremath{\gg}}
+\newcommand*\BitNeg{\ensuremath{\mathord{\sim}}}
+
+% \newcommand{\setname}[1]{\ensuremath{\uppercase{#1}}}
+% \newcommand{\matrixname}[1]{\ensuremath{\mathbf{\uppercase{#1}}}}
+% \newcommand{\vectorname}[1]{\ensuremath{\vec{\lowercase{#1}}}}
+% \newcommand{\scalarname}[1]{\ensuremath{\lowercase{#1}}}
+
+% \newcommand{\namedmatrix}[2]{\ensuremath{\mathbf{\uppercase{#1}}^{\text{#2}}}}
+
+
+% %\newcommand{\scalarfunction}[2]{{\ensuremath{\lowercase{#1}}(#2)}}
+% \newcommand{\scalarfunction}[2]{{\ensuremath{\scalarname{#1}(#2)}}}
+% %parameter 1: name; parameter 2: operands
+
+% \newcommand{\matrixfunction}[2]{{\ensuremath{\matrixname{#1}(#2)}}}
+% %parameter 1: name; parameter 2: operands
+
+% \newcommand{\vectorfunction}[2]{{\ensuremath{\vectorname{#1}(#2)}}}
+% %parameter 1: name; parameter 2: operands
+
+% \newcommand{\signalname}[1]{\texttt{\MakeLowercase{#1}}}
+
+% \newcommand{\statename}[1]{\texttt{\MakeUppercase{#1}}}
+
+
+\newcommand{\orif}{\gls{orif}\xspace}
+\newcommand{\recf}{\gls{recf}\xspace}
+
+
+\newcommand{\canf}{\gls{canf}\xspace}
+\newcommand{\reff}{\gls{reff}\xspace}
+\newcommand{\setS}{\gls{sets}\xspace}
+
+\newcommand{\colordepth}{\gls{colordepth}\xspace}
+
+\newcommand{\psnr}{\acrshort{psnr}\xspace}
+\newcommand{\mse}{\acrshort{mse}\xspace}
+
+\newcommand{\jcost}{\gls{jcost}\xspace}
+
+\newcommand{\jlambda}{\gls{jlambda}}
+\newcommand{\lambdaMode}{\gls{lambdamode}\xspace}
+\newcommand{\lambdaMotion}{\gls{lambdamotion}\xspace}
+\newcommand{\lambdaPred}{\gls{lambdapred}\xspace}
+
+
+
+
+\newcommand{\kronecker}{\gls{glsotimes}\xspace}
+
+% \newcommand{\block}{\ensuremath{\mathcal{B}}}
+% \newcommand{\orib}{\ensuremath{\block^{ori}}}
+% \newcommand{\canb}{\ensuremath{\block^{can}}}
+% \newcommand{\refb}{\ensuremath{\block^{ref}}}
+\newcommand{\costf}{\ensuremath{\scalarname{cost}}\xspace}
+% \newcommand{\sad}{\ensuremath{\operatorname{SAD}}}
+% \newcommand{\ads}{\ensuremath{\operatorname{ADS}}}
+% \newcommand{\satd}{\ensuremath{\operatorname{SATD}}}
+% \newcommand{\afd}{\ensuremath{\operatorname{AFD}}}
+
+
+\newcommand{\block}{\gls{block}\xspace}
+\newcommand{\orib}{\gls{oriblock}}
+\newcommand{\canb}{\gls{canblock}\xspace}
+\newcommand{\refb}{\gls{refblock}\xspace}
+\newcommand{\recb}{\gls{recblock}\xspace}
+\newcommand{\resb}{\gls{resblock}\xspace}
+\newcommand{\error}{\gls{errormatrix}\xspace}
+
+\newcommand{\D}{\gls{differencesM}\xspace}
+\newcommand{\dif}{\gls{difference}\xspace}
+
+\newcommand{\TD}{\gls{transformeddifferencesM}\xspace}
+\newcommand{\tdif}{\gls{transformeddifference}\xspace}
+
+\newcommand{\cfactor}{\gls{cfactor}\xspace}
+
+
+
+\newcommand{\sad}{\ensuremath{\operatorname{\acrshort{sad}}}}
+\newcommand{\satd}{\ensuremath{\operatorname{\acrshort{satd}}}}
+\newcommand{\ssd}{\ensuremath{\operatorname{\acrshort{ssd}}}}
+\newcommand{\sse}{\ensuremath{\operatorname{\acrshort{sse}}}}
+
+\newcommand{\ads}{\ensuremath{\operatorname{\acrshort{ads}}}}
+\newcommand{\afd}{\ensuremath{\operatorname{\acrshort{afd}}}}
+
+%% partials
+\newcommand{\psad}{\ensuremath{\operatorname{\acrshort{psad}}}}
+\newcommand{\psatd}{\ensuremath{\operatorname{\acrshort{psatd}}}}
+
+\newcommand{\naturals}{\ensuremath{\mathbb{N}}}
+\newcommand{\integers}{\ensuremath{\mathbb{Z}}}
+\newcommand{\reals}{\ensuremath{\mathbb{R}}}
+
+\newcommand{\primes}{\ensuremath{\mathbb{P}}}
+\newcommand{\rationals}{\ensuremath{\mathbb{Q}}}
+\newcommand{\complex}{\ensuremath{\mathbb{C}}}
+\newcommand{\quaternions}{\ensuremath{\mathbb{H}}}
+
+\newcommand{\shiftLeft}{\ensuremath{\text{<<}}}
+\newcommand{\shiftRight}{\ensuremath{\text{>>}}}
+\newcommand{\lambdaSum}[2]{\ensuremath{#1{\times}\lambda{+}#2{\times}\lambda}}
+\newcommand{\lambdaShi}[2][]{\ensuremath{#1\lambda \shiftLeft #2}}

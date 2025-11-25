@@ -1,0 +1,17 @@
+%!TEX root = ../main.tex
+
+
+\imprimircapa%
+
+\ifthenelse{\not \boolean{isPreTcc}}{%
+	\imprimirfolhaderosto*	
+}{}%
+
+% \ifthenelse{\boolean{isTcc}}{true}{false}
+
+% \imprimirfolhadeaprovacaodeproposta
+% \protect\incluirfichacatalografica{ficha.pdf}
+
+\ifthenelse{\boolean{isTccII}}{
+	\imprimirfolhadecertificacao	
+}{}

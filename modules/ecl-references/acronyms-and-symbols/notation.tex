@@ -1,0 +1,85 @@
+%!TEX root = ../main.tex
+
+% @Author: Ismael Seidel
+% @Date:   2019-03-18 11:24:11
+% @Last Modified by:   Ismael Seidel
+% @Last Modified time: 2019-12-06
+
+\renewcommand*\glspostdescription{}
+
+\newcommand{\newNotation}[3]{%
+	\newglossaryentry{#1}{%
+		type=notation,
+		name={#2},
+		description={#3},
+		sort={#1}
+	}
+	% \newacronym[type=important]{#1}{#2}{#3}
+}%
+
+\newcommand{\newSubNotation}[4]{%
+	\newglossaryentry{#1}{%
+		type=notation,
+		parent={#2},
+		name={#3},
+		description={#4},
+		sort={#1}
+	}
+	% \newacronym[type=important]{#1}{#2}{#3}
+}%
+
+
+
+
+\newNotation{set}{\setname{A}}{Upper case italic character is a set}
+
+\newNotation{ascalar}{\scalarname{A}}{Lower case italic character is a scalar}
+\newSubNotation{scalarfunction}{ascalar}{\scalarfunction{f}{...}}{is a function that returns an scalar}
+
+\newNotation{matrix}{\matrixname{A}}{Upper case bold character is a matrix}
+\newSubNotation{namedmatrix}{matrix}{\namedmatrix{A}{name}}{is a named matrix}
+\newSubNotation{sizedmatrix}{matrix}{\matrixname{A}$_{m\times n}$}{is an $m\times n$ sized matrix}
+\newSubNotation{sizedmatrixm}{matrix}{\matrixname{A}$_{m}$}{is an $m\times m$ sized matrix}
+\newSubNotation{indexmatrix}{matrix}{\matrixname{A}$_{i,j}$}{is an element in the $i^\text{th}$ row and $j^\text{th}$ column}
+\newSubNotation{sizedmatrixpart}{matrix}{\matrixname{A}$_{m\times n;m'\times n'}$}{is an $m\times n$ sized matrix with $p\times q$ partitions where $p=m/m'$ and $q=n/n'$.}
+\newSubNotation{sizedmatrixpartm}{matrix}{\matrixname{A}$_{m;m'}$}{is an $m\times m$ sized matrix with $p\times p$ partitions where $p=m/m'$. 
+For instance, an $8\times8$ matrix, partitioned in $2\times2$ submatrices, each with size $4\times4$: \begin{small}
+  \begin{equation} \nonumber
+  	\setlength{\arraycolsep}{2.5pt}
+  	\matrixname{A}_{8;4} 
+  	{=} 
+  	\begin{bmatrix} [ccc|ccc] 
+        \matrixname{A}_{1,1} & {\ldots} & \matrixname{A}_{1,4} & \matrixname{A}_{1,5} & \ldots & \matrixname{A}_{1,8} \\
+        \vdots & \ddots & \vdots & \vdots  & \ddots & \vdots \\
+        \matrixname{A}_{4,1} & \ldots & \matrixname{A}_{4,4} & \matrixname{A}_{4,5}  & \ldots & \matrixname{A}_{4,8} \\ \hline
+        \matrixname{A}_{5,1} & \ldots & \matrixname{A}_{5,4} & \matrixname{A}_{5,5}  & \ldots & \matrixname{A}_{5,8} \\
+        \vdots & \ddots & \vdots & \vdots  & \ddots & \vdots \\ 
+        \matrixname{A}_{8,1} & \ldots & \matrixname{A}_{8,4} & \matrixname{A}_{8,5}  & \ldots & \matrixname{A}_{8,8} \\
+      \end{bmatrix} 
+     {=} 
+      \begin{bmatrix}[c|c]
+      	\matrixname{A}_{;1,1} & \matrixname{A}_{;1,2} \\ \hline
+      	\matrixname{A}_{;2,1} & \matrixname{A}_{;2,2}
+      \end{bmatrix}
+  \end{equation}
+\end{small}
+}
+\newSubNotation{matrixfunction}{matrix}{\matrixfunction{F}{...}}{is a function that returns a matrix}
+
+
+
+% \newglossaryentry{vector}{%
+%   type=notation,
+%   name={a$\overrightarrow{v}$},
+%   description={Lower case character with an arrow above is a vector},
+%   sort={vector}
+% }
+
+\newNotation{vector}{${v}$}{Lower case character with an arrow above is a vector}
+
+\newNotation{zrtlsignal}{\signalname{A}}{Lower case character with typewriter font represents an RTL signal}
+\newNotation{zrtlstate}{\statename{A}}{Upper case character with typewriter font represents an RTL state}
+
+
+
+\glsaddall[types={notation}]

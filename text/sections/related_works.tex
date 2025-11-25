@@ -1,0 +1,138 @@
+\chapter{Related Works}
+\label{ch.related_works}
+
+
+
+{\color{red}
+    Dizer o que será abordado nesse capítulo.
+
+    Primeiro vou detalhar as etapas do JPEG Pleno, que é a principal iniciativa em padronizar a codificação de light fields.
+
+    Depois falar das alternativas, começando pelo Slanted 4DTM.
+
+    Por fim comentar sobre codificadores de LF que usam redes neurais. Imagino que isso seja o suficiente.
+}
+
+\section{JPEG Pleno}
+\label{sec.jpeg_pleno}
+
+{\color{red}
+    Falar alguma coisa pra deixar o texto um pouco mais coeso.
+
+    Falar das partes do padrão, o que são point claudios e hologramas.
+
+    Nem sei se vale a pena falar do prediction.
+}
+
+\subsection{4D Prediction Mode}
+\label{subsec.4dpm}
+
+\subsection{4D Transform Mode}
+\label{subsec.4dtm}
+
+Although \glspl{lf} can be seen as a 2D matrix of views, when the baseline is small the differences between neighbor pixels inside a view are similar to the differences across neighbor views.
+Therefore, it is useful to thread \glspl{lf} as a contiguous 4D matrix of data in these cases.
+With this in mind, traditional techniques of image compression can be extended to more dimensions, so they can be used to encode the \glspl{lf}.
+
+\Cref{fig.4dtm_steps} shows an overview of the \gls{4dtm} encoding process.
+In the first stage the \gls{lf} is partitioned in 4D blocks of equal sizes, as configured on the encoder.
+If the block is in the border of the \gls{lf}, different strategies could be used, but for simplicity we can assume that its sizes are exact multiples of the \gls{lf} size.
+To avoid confusion on the remainder of this work, in which different types of blocks will be referenced multiple times, we are going to convention names for the different types of blocks that will appear.
+The blocks created in this first stage of encoding will be called \textbf{base block}.
+
+\begin{figure}
+    \centering
+    \caption{Caption}
+    \label{fig.4dtm_steps}
+\end{figure}
+
+The codification of each base blocks is completely independent, since they do not share any data and the arithmetic codec clears its contexts after finishing each one of them.
+A single base block, in the middle of the codestream could be decoded alone, without affecting any of its neighbors. 
+This is done to preserve the random access properties, and can be used to parallelize the codec, as will be discussed in \cref{ch.proposal}.
+
+After the creation of the base block, it can be further subdivided into \textbf{partition block}.
+The creation of partition blocks is controlled by a set of three flags: Spatial Split, View Split and Transform.
+The Spatial Split flag divides the partition block in four smaller partition blocks across the spatial dimensions $(v, u)$, while the View Split divides the partition block in four parts across the view dimensions $(t, s)$.
+To stop the partition process the Transform flag can be used to advance the codification on that specific partition block.
+Another way to stop this subdivision process is when the size of a partition block is smaller than a minimum configured size.
+This partitioning can be useful to group similar regions, which increases the energy compaction of the 4D \gls{dct} that will be applied in sequence.
+
+In the next stage each partition block is represented as a finite sum of cosines using a 4D \gls{dct}.
+This transform is commonly used in visual signal compression systems specially because of its energy compaction properties.
+The type II \gls{dct} was used in this case, which is defined originally in a single dimension, as expressed in \cref{eq.dct}.
+One important property of the \gls{dct} II is its orthogonality, which means that it can be trivially extended to more dimensions by applying it on each direction of the matrix.
+For example a 2D \gls{dct} II can be implementing by applying the one dimensional transformation in each row and then in each column.
+A similar process can be achieved in the four dimensional case.
+
+\begin{equation}
+    \begin{aligned}
+    G_x(0) = \frac{\sqrt{2}}{M} \sum_{m=0}^{M-1} X(m) \\ \\
+    G_x(k) = \frac{2}{M} \sum_{m=0}^{M-1} X(m) cos \frac{(2m + 1) k \pi}{2 M}
+    \end{aligned}
+\label{eqn.dct_1d}
+\end{equation}
+
+Regarding the implementation, the most unusual characteristic from the \gls{dct} used in \gls{4dtm}, besides the expanded number of dimensions, is that no restrictions are defined over the transform sizes.
+In all of the most common video and image codecs available, the transformation step is performed only on blocks whose sizes fit on a few well delimited powers of two \cite{}.
+
+After the \gls{dct} transformation this data is forwarded to the hierarchical encoder, that will represent the \gls{dct} coefficients as an hexadeca-tree described by a sequence of flags and coefficients.
+This decomposition is used to explore some properties of the \gls{dct}.
+One property is that most of the energy of the data is concentrated in a few coefficients, corresponding to lower spatial frequencies.
+It means that a small number of coefficients will have a large magnitude, while most of the others will be small.
+Another property is the sparsity, which means that most of the coefficients are equal to zero.
+
+A quantization step can be used to increase the sparsity even more.
+In this stage the quantization is handled by a parameter in the hierarchical encoder named \textit{inferior bitplane}.
+This parameter is shared by all partition blocks inside the same base block, and works as a threshold to discard the \gls{lsb} of all coefficients.
+
+The hexadeca-tree used in this stage will be constructed in a recursive way, and can be interpreted as a compact way to locate where are the non zero coefficients, and how many bits are necessary to encode them.
+Here the third type of block can be introduced, it will be named \textbf{hierarchical block}, and all the following operations will be applied on it.
+
+Three flags will be used to construct this tree, they are named Split, Zero and Lower Bitplane.
+The Split flag, as the name suggests, divides the hierarchical block by half.
+Different from the partitioning though, this splitting is applied on all dimensions, generating sixteen sub-trees, which is why this data structure is named hexadeca-tree.
+The Zero flag is used to indicate that the current hierarchical block contains coefficients that can be zeroed.
+Note that it does not necessarily means that all coefficients are equal to zero, but they can be used to further quantize the data in case it is worth.
+
+Lower Bitplane is a flag that encodes a trickier operation.
+Every hierarchical block contains a property named \textit{current bitplane} that says how many bit is necessary to represent its larger coefficient.
+When a hierarchical block is divided, one of the parts will contain the larger coefficient, so the current bitplane keep the same.
+Although, the other hierarchical blocks might now have a bitplane that is unnecessary large to represent its new bigger coefficient, so the Lower Bitplane flag is used to decrease this number, one by one, until it matches the expected value.
+
+Since there is no stop flag, the stopping criteria must be represented implicitly.
+There are tree ways in which the recursion can be stopped.
+The first one of them is when a Zero flag is used.
+Another way in which this procedure could be stopped is if the current bitplane variable falls under the inferior bitplane value.
+In this case all the values of this hierarchical block will be zeroed.
+Finally, the last option to stop the recursion is when the hierarchical block is divided until it becomes unitary.
+This unitary block contains a single coefficient that will then be encoded.
+
+The codification of singular coefficients is performed on their magnitude, and are separated per bitplane.
+Only the bits that lies between the inferior and the current bitplanes must be encoded, one after the other from the \gls{msb} to the \gls{lsb}.
+After encoding the magnitude the sign of the coefficients are encoded, if necessary.
+Since there are cases in which a zero can reach this stage, the encoder only encodes the sign if the coefficient is different than zero.
+
+Following \cref{fig.4dtm_steps}, the last step of the codification process, before actually writing the data into a file, is to encode all these flags, signs and coefficients with an arithmetic encoder, which in this case is an \gls{abac}.
+To make this as efficiently as possible, the values that will be encoded are divided into multiple probability contexts, according to their type and scope.
+These contexts ensure that each event will be as detached as possible, while still capturing enough probability information.
+
+Among the contexts used there are 32 of them dedicated for each possible bit in the coefficients, and 64 of them to be used on each one of the two hierarchical flag bits according to the current bitplane.
+These contexts are adaptive, which means that their probabilities are updated when each bit is encoded.
+There is also another context that is used in cases where updating the probabilities do not matter too much.
+They are use to encode data that are not too frequent, such as the 5 bits that encode the inferior bitplane, or the partition flags, which do not spend too much data.
+It is also used to encode the signs, since the probability of a coefficient being positive or negative is of around 50\%.
+
+The \gls{abac} algorithm used is flexible enough to interchangeably encode all these types of data in the same bitstream.
+When a flag needs to be encoded, for example, it is enough to pass the correspondent probability context and the correspondent bits to the arithmetic encoder.
+If the context is adaptive, it also need to be updated accordingly.
+
+\section{Slanted 4DTM}
+\label{sec.slanted_4dtm}
+
+\section{Neural Network Light Field Codecs}
+
+{\color{red}
+    Terminar o texto falando que assim como em outras mídias, a codificação com redes neurais ainda é meio paia e listar os problemas de simetria de tempo, eficiência energética e a dificuldade de criar hardware dedicado.
+
+    falar brevemente sobre o trabalho que o Queiroz tem com o pessoal de Pelotas (que ele apresentou na palestra da DPVSA e que ainda está no arxiv)
+}

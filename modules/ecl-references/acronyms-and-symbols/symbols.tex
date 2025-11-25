@@ -1,0 +1,317 @@
+%!TEX root = ../main.tex
+
+% @Author: ismaelseidel
+% @Date:   2016-10-21 16:40:29
+% @Last Modified by:   Ismael Seidel
+% @Last Modified time: 2025-05-27 20:59:35
+
+%% List of Symbols
+
+
+\newglossaryentry{lengthtree}%
+{%
+	name={\ensuremath{L_t}},
+	description={description here},
+	sort={L},
+	type=symbols
+}
+
+
+\newglossaryentry{stddev}%
+{%
+	name={\ensuremath{\sigma}},
+	description={Standard deviation},
+	sort={sigma},
+	type=symbols
+}
+
+
+\newglossaryentry{quantization}%
+{%
+	name={\matrixname{Q}},
+	description={Quantization},
+	sort={Q},
+%	see=[Acronyms:]{qp},
+	type=symbols
+}
+
+\newglossaryentry{quantizationParameter}%
+{%
+	name={\scalarname{qp}},
+	description={Quantization Parameter Value},
+	sort={QP},
+%	see=[Acronyms:]{qp},
+	type=symbols
+}
+
+\newglossaryentry{transform}%
+{%
+	name={\matrixname{T}},
+	description={Transform},
+	sort={T},
+	type=symbols
+}
+
+
+\newglossaryentry{inversequantization}%
+{%
+	name={\matrixname{Q}\ensuremath{^{-1}}},
+	description={Inverse Quantization},
+	sort={Qinv},
+%	see=[Acronyms:]{qp},
+	type=symbols
+}
+
+\newglossaryentry{inversetransform}%
+{%
+	name={\matrixname{T}\ensuremath{^{-1}}},
+	description={Inverse Transform},
+	sort={Tinv},
+	type=symbols
+}
+
+% orif
+% recf
+
+\newglossaryentry{orif}%
+{%
+	name={\ensuremath{\namedmatrix{F}{ori}}},
+	description={Original Frame},
+	sort={Frame original},
+	type=symbols
+}
+
+\newglossaryentry{recf}%
+{%
+	name={\ensuremath{\namedmatrix{F}{rec}}},
+	description={Reconstructed Frame},
+	sort={Frame reconstructed},
+	type=symbols
+}
+
+\newglossaryentry{canf}%
+{%
+	name={\ensuremath{\namedmatrix{F}{can}}},
+	description={Candidate Frame},
+	sort={Frame candidate},
+	type=symbols
+}
+
+
+\newglossaryentry{reff}%
+{%
+	name={\ensuremath{\namedmatrix{F}{ref}}},
+	description={Reference Frame},
+	sort={Frame reference},
+	type=symbols
+}
+
+\newglossaryentry{sets}%
+{%
+	name={\ensuremath{S}},
+	description={Set of candidate blocks},
+	sort={set of candidate blocks},
+	type=symbols
+}
+
+\newglossaryentry{colordepth}%
+{%
+	name={\scalarname{b}},
+	description={Color depth (number of bits)},
+	sort={Color depth},
+	type=symbols
+}
+
+\newglossaryentry{jcost}%
+{%
+	name={\ensuremath{j_{\text{cost}}}},
+	description={The lagrangian rate-distortion cost of selecting a given candidate as reference},
+	sort={J},
+	type=symbols
+}
+
+\newglossaryentry{jlambda}%
+{%
+	name={\(\lambda\)},
+	description={The Lagrange multiplier.},
+	sort={lambdaj},
+	type=symbols
+}
+
+\newglossaryentry{lambdamode}%
+{%
+	name={\ensuremath{\lambda^\text{mode}}},
+	description={The Lagrange multiplier used during mode decision.},
+	sort={lambdamode},
+	type=symbols
+}
+
+\newglossaryentry{lambdamotion}%
+{%
+	name={\ensuremath{\lambda^\text{motion}}},
+	description={The Lagrange multiplier used during motion estimation.},
+	sort={lambdamotion},
+	type=symbols
+}
+
+\newglossaryentry{lambdapred}%
+{%
+	name={\ensuremath{\lambda^\text{pred}}},
+	description={The Lagrange multiplier used during prediction.},
+	sort={lambdapred},
+	type=symbols
+}
+
+\newglossaryentry{cfactor}%
+{%
+	name={\ensuremath{c}},
+	description={A scaling factor used in SATD. In HM, it is defined as $\sfrac{1}{2^n}$.},
+	sort={cfactor},
+	type=symbols
+}
+
+\newglossaryentry{glsotimes}%
+{%
+	name={\ensuremath{\otimes}},
+	description={The Kronecker product.},
+	sort={kronecker},
+	type=symbols
+}
+
+\newglossaryentry{block}%
+{%
+	name={\ensuremath{\textbf{B}}},
+	description={A given block, i.e., a partition of the frame},
+	sort={block},
+	type=symbols
+}
+
+\newglossaryentry{oriblock}%
+{%
+	name={\ensuremath{\textbf{B}^{\text{ori}}}},
+	description={Original block},
+	sort={block original},
+	type=symbols
+}
+
+\newglossaryentry{canblock}%
+{%
+	name={\ensuremath{\textbf{B}^{\text{can}}}},
+	description={Candidate block},
+	sort={block candidate},
+	type=symbols
+}
+
+
+\newglossaryentry{recblock}%
+{%
+	name={\ensuremath{\textbf{B}^{\text{rec}}}},
+	description={Reconstructed block},
+	sort={block reconstructed},
+	type=symbols
+}
+
+
+\newglossaryentry{resblock}%
+{%
+	name={\ensuremath{\textbf{B}^{\text{res}}}},
+	description={Residue block},
+	sort={block residue},
+	type=symbols
+}
+
+\newglossaryentry{refblock}%
+{%
+	name={\ensuremath{\textbf{B}^{\text{ref}}}},
+	description={Reference block},
+	sort={block reference},
+	type=symbols
+}
+
+% differencesM
+% difference
+\newglossaryentry{errormatrix}%
+{%
+	name={\ensuremath{\textbf{E}}},
+	description={Error matrix. Such matrix can represent the difference between original and decoded blocks or even frames.},
+	sort={error matrix},
+	type=symbols
+}
+
+
+\newglossaryentry{differencesM}%
+{%
+	name={\ensuremath{\textbf{D}}},
+	description={Differences matrix; \textbf{D} = \canb - \orib },
+	sort={differences Matrix},
+	type=symbols
+}
+
+\newglossaryentry{difference}%
+{%
+	name={\ensuremath{d}},
+	description={a scalar value from the differences matrix; },
+	sort={differences value},
+	type=symbols
+}
+
+\newglossaryentry{transformeddifferencesM}%
+{%
+	name={\ensuremath{\operatorname{TD}}},
+	description={Transformed Differences matrix; },
+	sort={transformed differences Matrix},
+	type=symbols
+}
+
+\newglossaryentry{transformeddifference}%
+{%
+	name={\ensuremath{td}},
+	description={a scalar value from the transformed differences matrix; },
+	sort={transformed differences value},
+	type=symbols
+}
+
+
+
+% numbers 
+
+\newglossaryentry{naturalnumbers}%
+{%
+	name={\ensuremath{\mathbb{N}}},
+	description={The set of natural numbers. },
+	sort={Number Natural},
+	type=symbols
+}
+
+\newglossaryentry{rationalnumbers}%
+{%
+	name={\ensuremath{\mathbb{Q}}},
+	description={The set of rational numbers. },
+	sort={Number Rational},
+	type=symbols
+}
+
+\newglossaryentry{integernumbers}%
+{%
+	name={\ensuremath{\mathbb{Z}}},
+	description={The set of integer numbers. },
+	sort={Number Integer},
+	type=symbols
+}
+
+\newglossaryentry{realnumbers}%
+{%
+	name={\ensuremath{\mathbb{R}}},
+	description={The set of real numbers. },
+	sort={Number Real},
+	type=symbols
+}
+
+% \newcommand{\naturals}{\ensuremath{\mathbb{N}}}
+% \newcommand{\integers}{\ensuremath{\mathbb{Z}}}
+% \newcommand{\reals}{\ensuremath{\mathbb{R}}}
+
+% \newcommand{\primes}{\ensuremath{\mathbb{P}}}
+% \newcommand{\rationals}{\ensuremath{\mathbb{Q}}}
+% \newcommand{\complex}{\ensuremath{\mathbb{C}}}
+% \newcommand{\quaternions}{\ensuremath{\mathbb{H}}}

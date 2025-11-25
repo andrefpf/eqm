@@ -1,0 +1,81 @@
+%!TEX root = ../main.tex
+
+\ganttset{group/.append style={orange},
+milestone/.append style={red},
+progress label node anchor/.append style={text=red}}
+
+\begin{ganttchart}[%Specs
+     y unit title=0.5cm,
+     y unit chart=.75cm,
+     x unit=.25cm,
+     vgrid,hgrid,
+     newline shortcut=true,
+     bar label node/.append style={align=left, font=\scriptsize,
+     inner ysep=0mm, 
+     append after command={
+     \pgfextra
+     \draw (\tikzlastnode.south west)++ (0,.2) |- (\tikzlastnode.south east);
+     \endpgfextra
+     }},
+     milestone label node/.append style={align=left, font=\scriptsize,
+     inner ysep=0mm, 
+     append after command={
+     \pgfextra
+     \draw (\tikzlastnode.south west)++ (0,.2) |- (\tikzlastnode.south east);
+     \endpgfextra
+     }},
+     title height=1,
+    title/.append style={fill=black!50},
+     title label font=\bfseries\footnotesize,
+     bar/.style={fill=blue},
+     bar height=0.5,
+%   progress label text={},
+     group right shift=0,
+     group top shift=0.7,
+     group height=.3,
+     group peaks width={0.2},
+     inline]{0}{39}
+    %labels
+    \gantttitle{Approximated chronology (2025-2026)}{40}\\  % title 1
+        \foreach \i in {3,...,12} {
+        \newdate{mydate}{1}{\i}{2025}
+        \gantttitle[]{\shortmonthname[\getdatemonth{mydate}]}{4}
+    }
+
+
+    % \definecolor{lf}{HTML}{D44B65}
+    % \ganttset{group/.append style={draw=black, fill=lf},}
+    \ganttgroup[inline=false]{TCC1}{0}{19}\\
+
+    %\ganttbar[inline=false]{Experimentação e implementação das otimizações \ganttalignnewline estabelecidas no código base do JPEG Pleno}{0}{8} \\
+    \ganttbar[inline=false]{Initial performance and profilling experiments on the \gls{jplm}}{0}{8} \\
+    \ganttbar[inline=false]{TCC I: cover, abstract, introduction, initial\ganttalignnewline proposal, conclusions and future work}{9}{15} \\
+    \ganttbar[inline=false]{Initial implementation of \gls{simd}-related changes}{16}{19} \\
+    \ganttmilestone[inline=false]{TCC I final delivery}{19} \\
+
+    \ganttgroup[inline=false]{TCC2}{20}{39}\\
+    \ganttbar[inline=false]{Development of benchmarks and extensive testing\ganttalignnewline to validate the changes}{20}{23} \\
+    \ganttbar[inline=false]{Writing TCC II}{24}{33} \\
+    % \ganttbar[inline=false]{Análise dos dados}{23}{31}\\
+    \ganttmilestone[inline=false]{TCC II final delivery}{33}\\
+    \ganttbar[inline=false]{Presentation preparations}{34}{37}\\
+    \ganttmilestone[inline=false]{Defense}{37}\\
+    \ganttbar[inline=false]{TCC II final adjustments}{38}{39}
+
+    
+
+    \ganttset{group right shift=0,
+     group top shift=0.7,
+     group height=.3,
+     group peaks width={0},}
+
+    \ganttvrule[
+      vrule/.append style={black, thin},
+      vrule label node/.append style={anchor=north west}
+      ]{}{17}
+
+      % \ganttvrule[
+      % vrule/.append style={black, thin},
+      % vrule label node/.append style={anchor=north west}
+      % ]{}{24}
+\end{ganttchart}

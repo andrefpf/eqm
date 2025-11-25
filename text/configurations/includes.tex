@@ -1,0 +1,143 @@
+%!TEX root = ../main.tex
+
+\usepackage[T1]{fontenc} % fontes
+\usepackage[utf8]{inputenc} % UTF-8
+\usepackage{lipsum} % Gerador de texto
+\usepackage{pdfpages} % Inclui PDF externo (ficha catalográfica)
+\usepackage{xcolor, colortbl, multirow} % Gerar tabelas
+%\usepackage{minted} % Usado para mostrar código
+
+
+\usepackage{minted}
+
+\usepackage{graphicx} % Adicionar imagens 
+\usepackage{float} % Deixar a imagem na posição desejada
+\usepackage{iflang}
+
+% Save the class version of \tcc
+\let\classtcc\tcc
+\usepackage[lined,boxed,ruled,commentsnumbered]{algorithm2e}
+\newcommand\mycommfont[1]{\footnotesize\ttfamily\textcolor{blue}{#1}}
+\SetCommentSty{mycommfont}
+% Save the algorithm2e version
+\let\algcomment\tcc
+
+% Restore the class version
+\let\tcc\classtcc
+
+\usepackage{cco-ufsc-tcc-tables}
+
+
+\usepackage{subcaption}
+\usepackage{amssymb}
+\usepackage{pgf}
+\usepackage{tikz} % Gerar figuras
+\usepackage{svg}
+\usepackage{pgfgantt} % Gráfico de Gantt
+\usepackage{framed,enumitem}
+\usepackage[nomain, acronym, symbols, indexonlyfirst]{glossaries}
+\usepackage{physics}  % Símbolos de derivadas
+\usepackage{mathtools}
+\usepackage{amsmath,amssymb,amsfonts}
+
+\usepackage{float} % to use H
+
+\usepackage[%
+  doi=false, %
+  isbn=false, %
+  url=true, %
+  minbibnames=1, %
+  maxbibnames=2, %
+  style=abnt, language=brazil]{biblatex} %, language=english
+%using minbibnames and maxbibnames i do not need to edit the bibtex to put 'and others'
+
+% \let\UpperOrSC\NormalOrSC
+\let\UpperOrSCCite\NormalOrSCCite % fix for NBR 10520:2023
+% https://github.com/abntex/biblatex-abnt/issues/123
+
+
+\usepackage{eclvc}
+
+\usepackage[bottom]{footmisc}
+%https://latex.org/forum/viewtopic.php?t=5001
+
+
+\usepackage[capitalise,nameinlink]{cleveref}
+% \Crefformat{figure}{#2Fig.~#1#3}
+% \Crefmultiformat{figure}{Figs.~#2#1#3}{ and~#2#1#3}{, #2#1#3}{ and~#2#1#3}
+
+\definecolor{mintedbackground}{rgb}{0.95,0.95,0.95}
+
+\newmintedfile[cppcode]{cpp}{
+bgcolor=mintedbackground,
+fontfamily=tt,
+fontsize=\scriptsize,
+linenos=true,
+numberblanklines=true,
+numbersep=-3pt,
+gobble=0,
+autogobble=true,
+frame=leftline,
+framerule=0.4pt,
+framesep=1mm,
+funcnamehighlighting=true,
+tabsize=4,
+obeytabs=false,
+mathescape=false
+samepage=false, %with this setting you can force the list to appear on the same page
+showspaces=false,
+showtabs =false,
+% framesep=10mm
+% texcl=false,
+}
+
+\usepackage{morewrites}
+\usepackage{etoolbox}
+
+\usepackage{totcount}
+
+\regtotcounter{table}
+\regtotcounter{figure}
+\regtotcounter{algocf}
+
+\newcounter{acronymusecount}
+\regtotcounter{acronymusecount}
+
+\newcounter{symbolusecount}
+\regtotcounter{symbolusecount}
+
+\newcommand*\trackglsusage[1]{%
+  \begingroup%
+    \edef\tempglabel{#1}%
+    \edef\tempglstype{\glsentrytype{\tempglabel}}%
+    % \typeout{DEBUG: Using label = [\tempglabel], type = [\tempglstype]}%
+    \ifx\tempglstype\acronymtype%
+      \stepcounter{acronymusecount}%
+      % \typeout{DEBUG: Counted as acronym.}%
+    \else%
+      % \typeout{DEBUG: Not counted as acronym.}%
+      \ifx\tempglstype\notationtype%
+        % \typeout{DEBUG: Counted as notation.}%
+      \else%
+        \stepcounter{symbolusecount}%
+        % \typeout{DEBUG: Counted as symbol.}%
+      \fi%
+    \fi%
+  \endgroup%
+}
+
+\let\originalgls\gls
+\RenewDocumentCommand{\gls}{m}{\trackglsusage{#1}\originalgls{#1}}
+
+\let\originalglspl\glspl
+\RenewDocumentCommand{\glspl}{m}{\trackglsusage{#1}\originalglspl{#1}}
+
+\let\originalGls\Gls
+\RenewDocumentCommand{\Gls}{m}{\trackglsusage{#1}\originalGls{#1}}
+
+\let\originalGlspl\Glspl
+\RenewDocumentCommand{\Glspl}{m}{\trackglsusage{#1}\originalGlspl{#1}}
+
+
+\newboolean{addNotation}
+\setboolean{addNotation}{false}

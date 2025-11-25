@@ -1,0 +1,12 @@
+\addbibresource{bib-files/books.bib}
+\addbibresource{bib-files/bib.bib}
+\addbibresource{bib-files/papers.bib}
+\addbibresource{bib-files/refs_pdj.bib}
+\addbibresource{bib-files/pleno.bib}
+
+\addbibresource{bib-files/contributions.bib}
+\addbibresource{bib-files/standard.bib}
+
+\newcommand{\citeonline}[2][]{\citeauthor*{#2} (\citeyear*{#2}%
+\ifthenelse{\equal{#1}{}}{}{, p.#1}%
+)}

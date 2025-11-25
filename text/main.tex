@@ -1,0 +1,30 @@
+% !TEX jobname = exemplo-tcc-i
+% !TEX options=--shell-escape
+% !TEX output_directory = ./.temp/
+
+\documentclass[nocleardoublepage, oneside, noabntexcite, english]{ufsc-thesis-rn46-2019}
+
+\input{configurations/main}
+
+\begin{document}
+
+\input{pretextual/main}
+
+\textual%
+
+\input{text/sections/introduction}
+\input{text/sections/related_works}
+\input{text/sections/analysis}
+\input{text/sections/proposal}
+\input{text/sections/evaluation_method}
+% \input{sections/background}
+\input{sections/results}
+% \input{sections/rascunho}
+
+% \ifthenelse{\not \boolean{isPreTcc}}{%
+% 	\input{sections/conclusoes}
+% }{}%
+
+% \input{postextuais/main}
+
+\end{document}

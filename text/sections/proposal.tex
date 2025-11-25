@@ -1,0 +1,62 @@
+\chapter{Proposal}
+\label{ch.proposal}
+
+\section{Parallel 4DTM codec}
+
+The first contribution created during the development of this work was a modification of the JPEG PLeno Model software to parallelize the \gls{lf} encoding and decoding mode on the \gls{4dtm} codec. 
+A previous effort was already made to improve the codec speed through software parallelism.
+However, further improvements were still required, especially regarding the implementation of parallel decoding, which remained entirely sequential \cite{}.
+
+Although it is not directly related to the objectives listed in \cref{subsec.specific_objectives}, this alteration already sped up data collection during the many experiments conducted to identify opportunities for improvement on \gls{4dtm}, and is expected to further assist the ongoing research.
+The specific details about this contribution are better explained on our paper, published on TCAS-I \ref{}, but this section will be an overview of the main challenges and solutions involved in this contribution.
+
+As explained in \cref{subsec.4dtm}, after the initial partitioning, the remaining of the codification process is handled independently for each base block.
+This property was central to parallelize the codec, because many blocks can be encoded at the same time with minimal control of race conditions, since they are independent.
+Also, because the block encoding represents such a big proportion of the codification time, the gain are considerable.
+
+One of the major challenges presented by the standard structure was related to the representation of each block in the codestream.
+Since each block in a \gls{lf} may have drastically different content, some of them will be harder to encode than others, and as such will require more bits to be represented.
+This presents a requirement to identify the start and end of each block within the codestream.
+
+In \gls{4dtm} there are two ways to convey this order, one that is mandatory and another that is optional.
+The mandatory technique achieves this order through a marker named \gls{sob}, represented by the byte sequence \texttt{0xFFA4}.
+A \gls{sob} marker must be placed before the bitstream of each block, which also need to be written according to a predetermined 4D raster order.
+Another way to identify the bitstream of each block is through an optional \gls{pnt} marker segment, that contains a sequence of pointers to the start of each bitstream.
+The syntax of the codestream is exemplified by \cref{fig.codestream}, which contains six blocks and an optional \gls{pnt} segment.
+Note that even though there is a \gls{pnt} segment in this example, the \gls{sob} marker are also present.
+
+\begin{figure}[tb]
+    \centering
+    \includegraphics[width=0.8\linewidth, trim={1.5cm 0 0 0},clip]{text/imgs/codestream.pdf}
+    \caption{\added{Example of a \gls{4dtm} codestream with six 4D blocks and an optional Codestream Pointer Set (PNT) marker segment. In the PNT, each Ppnt$^i$ entry points to the byte position in which lies the $i^\text{th}$ 4D block. Note that in the first 4D block there is a \texttt{FFA4} sequence (bytes 84 and 85) which is not a start of block (SOB) marker, but a part of that 4D block bitstream.}}
+    \label{fig.codestream}
+\end{figure}
+
+In the encoder side, the main challenge regarding this structure is to control the bitstream writes to respect the expected order.
+A solution to this problem was achieved by using an intermediate structure to store the bitstream of each base block before writing them into the file.
+As the number of blocks is known in advance, a simple \texttt{std::vector} was enough to store a pointer to each bitstream object.
+After the codification of all blocks finished, this vector containing pointers to all bitstream objects was iterated and the data dumped into the file according to the expected order.
+This procedure is illustrated by \cref{fig.parallel_encoder}
+
+\begin{figure}[!b]
+\input{text/imgs/encoder_model}
+\caption{Example of the parallel execution of \mintinline{cpp}{run_for_block_4d} method. We implemented a \mintinline{cpp}{std::vector} as an intermediate structure to store the pointers for each codestream. Each position of the array corresponds to a 4D block coordinate ([t,s,v,u]) inside a color channel (c). The intermediate structure is detailed in the orange blocks of the figure.}
+\label{fig.parallel_encoder}
+\end{figure}
+
+While the impacts of the standard structure were minimal in the encoder, they were much more troublesome in the decoder.
+These problems raised because of the way the \gls{sob} marker was designed.
+Although this random access strategy is conceptually valid, it can only work if the marker sequence is reserved uniquely for the purpose of marking the block starts, which is not the case in \gls{4dtm}.
+Since there are not any control on the arithmetic encoder to prevent the generation of the \gls{sob} byte sequence, these coincidental values can appear in ways that make it challenging to differentiate from actual markers.
+
+One way to circumvent this challenge is using the \gls{pnt} marker segment as the main strategy to identify the bitstreams.
+A problem with this approach is that the \gls{pnt} spends more bits to represent the locations, and therefore produce a non negligible overhead on the codec in terms of \gls{rd}.
+
+Another solution is to modify the arithmetic encoder to avoid issuing the \gls{sob} sequence used to identify markers.
+Since the arithmetic encoder outputs one bit at a time, from the \gls{lsb} to the \gls{msb}, this control consists in detecting sequences of seven bits 1 and forcing the codification of a bit 0 in sequence.
+Therefore, instead of generating the byte \texttt{0xFF} (1111 1111$_2$), the generated value will be \texttt{0x7F} (0111 1111$_2$), which is free of conflicts.
+The arithmetic decoder also need to be modified to handle these changes.
+Fortunately the updates are simple, it only needs to read and discard any value that appears after a sequence of seven bits 1.
+
+This solution adds only a single extra bit for each occurrence of the byte \texttt{0xFF}, which is a modest increase given its usefulness.
+Despite that, an important disclosure is that even though modifying the arithmetic encoder is a simpler and more robust solution than the others presented, it does not complies with the current version of the JPEG Pleno Part 2 standard.

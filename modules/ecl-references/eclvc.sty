@@ -1,0 +1,190 @@
+%!TEX root = main.tex
+
+\NeedsTeXFormat{LaTeX2e} %this is necessary for sty files?
+\ProvidesPackage{eclvc}[2017/10/31 -- Provides a package with usefull commands for the ECL VC articles]
+%happy hallowen
+
+\PackageInfo{eclvc}{info-text}
+
+%useful infos: https://pt.sharelatex.com/learn/Writing_your_own_package
+
+\RequirePackage{amsmath}
+\RequirePackage{amstext}
+\RequirePackage{amsfonts}
+\RequirePackage{amssymb}
+\RequirePackage{amsthm}
+\RequirePackage{xparse}
+
+\ExplSyntaxOn
+\NewDocumentCommand{\ucgreek}{m}
+ {
+  \str_case:nn { #1 }
+   {
+    {A}{\mathrm{A}}
+    {B}{\mathrm{B}}
+    {C}{\Sigma}
+    {D}{\Delta}
+    {E}{\mathrm{E}}
+    {F}{\Phi}
+    {G}{\Gamma}
+    {H}{\mathrm{H}}
+    {I}{\mathrm{I}}
+    {J}{\Theta}
+    {K}{\mathrm{K}}
+    {L}{\Lambda}
+    {M}{\mathrm{M}}
+    {N}{\mathrm{N}}
+    {O}{\mathrm{O}}
+    {P}{\Pi}
+    {Q}{\mathrm{X}}
+    {R}{\mathrm{P}}
+    {S}{\Sigma}
+    {T}{\mathrm{T}}
+    {U}{\Upsilon}
+    %{V}{}
+    {W}{\Omega}
+    {X}{\Xi}
+    {Y}{\Psi}
+    {Z}{\mathrm{Z}}
+   }
+ }
+\NewDocumentCommand{\lcgreek}{m}
+ {
+  \str_case:nn { #1 }
+   {
+    {a}{\alpha}
+    {b}{\beta}
+    {c}{\varsigma}
+    {d}{\delta}
+    {e}{\varepsilon}
+    {f}{\varphi}
+    {g}{\gamma}
+    {h}{\eta}
+    {i}{\iota}
+    {j}{\vartheta}
+    {k}{\kappa}
+    {l}{\lambda}
+    {m}{\mu}
+    {n}{\nu}
+    {o}{o}
+    {p}{\pi}
+    {q}{\chi}
+    {r}{\rho}
+    {s}{\sigma}
+    {t}{\tau}
+    {u}{\upsilon}
+    %{v}{}
+    {w}{\omega}
+    {x}{\xi}
+    {y}{\psi}
+    {z}{\zeta}
+   }
+ }
+\ExplSyntaxOff
+
+% \usepackage{amsmath}
+\let\originalleft\left
+\let\originalright\right
+\renewcommand{\left}{\mathopen{}\mathclose\bgroup\originalleft}
+\renewcommand{\right}{\aftergroup\egroup\originalright}
+
+
+
+\newcommand{\setname}[1]{\ensuremath{\uppercase{#1}}}
+\newcommand{\matrixname}[1]{\ensuremath{\mathbf{\uppercase{#1}}}}
+\newcommand{\vectorname}[1]{\ensuremath{\overrightarrow{\lowercase{#1}}}} %vec
+\newcommand{\scalarname}[1]{\ensuremath{\lowercase{#1}}}
+
+
+\newcommand{\indexedmatrix}[2]{\ensuremath{\matrixname{#1}^{\scalarname{#2}}}}
+\newcommand{\namedmatrix}[2]{\ensuremath{\mathbf{\uppercase{#1}}^{\text{#2}}}}
+\newcommand{\namedset}[2]{\ensuremath{\setname{#1}^{\text{#2}}}}
+
+\newcommand{\namedvector}[2]{\ensuremath{\vectorname{#1}^{\text{#2}}}}
+
+\newcommand{\namedscalar}[2]{\ensuremath{\scalarname{#1}^{\text{#2}}}}
+
+%\newcommand{\scalarfunction}[2]{{\ensuremath{\lowercase{#1}}(#2)}}
+\newcommand{\scalarfunction}[2]{{\ensuremath{\scalarname{#1}\left(#2\right)}}}
+% \newcommand{\scalarfunction}[2]{{\ensuremath{\scalarname{#1}(#2)}}}
+%parameter 1: name; parameter 2: operands
+
+\newcommand{\matrixfunction}[2]{{\ensuremath{\matrixname{#1}\left(#2\right)}}}
+% \newcommand{\matrixfunction}[2]{{\ensuremath{\matrixname{#1}(#2)}}}
+%parameter 1: name; parameter 2: operands
+
+\newcommand{\vectorfunction}[2]{{\ensuremath{\vectorname{#1}\left(#2\right)}}}
+% \newcommand{\vectorfunction}[2]{{\ensuremath{\vectorname{#1}(#2)}}}
+%parameter 1: name; parameter 2: operands
+
+\newcommand{\signalname}[1]{\texttt{\MakeLowercase{#1}}}
+
+\newcommand{\statename}[1]{\texttt{\MakeUppercase{#1}}}
+
+
+\newcommand{\alphabetname}[1]{\ensuremath{\ucgreek{#1}}}
+% \newcommand{\alphabetname}[1]{\ensuremath{\mathbf{\MakeLowercase{#1}}}}
+\newcommand{\stringname}[1]{\ensuremath{\mathbf{\MakeLowercase{#1}}}}
+
+%\DeclarePairedDelimiter\abs{\lvert}{\rvert}%
+% \newcommand{\abs}[1]{\ensuremath{\left|#1\right|}}
+
+\newcommand{\citeSection}[1]{Section~\ref{#1}}
+\newcommand{\citeChapter}[1]{Chapter~\ref{#1}}
+\newcommand{\citePart}[1]{Part~\ref{#1}}
+\newcommand{\citeAnnex}[1]{Annex~\ref{#1}}
+\newcommand{\citeAppendix}[1]{Appendix~\ref{#1}}
+\newcommand{\citeFig}[1]{Figure~\ref{#1}}
+\newcommand{\citeFigure}[1]{Figure~\ref{#1}}
+\newcommand{\citeTable}[1]{Table~\ref{#1}}
+\newcommand{\citeTab}[1]{\citeTable{#1}}
+\newcommand{\citeEq}[1]{Equation~\ref{#1}}
+% \SetKw{Continue}{continue} %setting algorithm2e keyword (kw)
+\newcommand{\citeAlg}[1]{Algorithm~\ref{#1}}
+\newcommand{\citeAlgorithm}[1]{Algorithm~\ref{#1}}
+\newcommand{\citeAlgLine}[1]{Line~\ref{#1}}
+\newcommand{\citeAlgLineInterval}[2]{Lines~\ref{#1}-\ref{#2}}
+\newcommand{\citeNote}[1]{Note~\ref{#1}}
+\newcommand{\citeEquation}[1]{Equation~\ref{#1}}
+\newcommand{\citePage}[1]{p.~\pageref{#1}}
+
+\newcommand{\citeProp}[1]{Property~\ref{#1}}
+\newcommand{\citeProperty}[1]{Property~\ref{#1}}
+\newcommand{\citeThm}[1]{Theorem~\ref{#1}}
+\newcommand{\citeTheorem}[1]{Theorem~\ref{#1}}
+\newcommand{\citeDef}[1]{Definition~\ref{#1}}
+\newcommand{\citeDefinition}[1]{Definition~\ref{#1}}
+
+\newcommand{\refEq}[1]{(\ref{#1})}
+\newcommand{\citeComparison}[1]{\citeauthor*{#1}~\cite{#1}}
+\newcommand{\bdbr}{\gls{bd}-Rate}
+\newcommand{\refPage}[1]{p.~\pageref{#1}}
+
+\newcommand{\genericBm}{\ensuremath{\scalarname{l}}}
+\newcommand{\genericBn}{\ensuremath{\scalarname{m}}}
+\newcommand{\genericBmxn}{\ensuremath{\genericBm{}{\times}\genericBn{}}}
+
+\newcommand{\genericPm}{\ensuremath{\genericBm'}}
+\newcommand{\genericPn}{\ensuremath{\genericBn'}}
+\newcommand{\genericPmxn}{\ensuremath{\genericPm{}{\times}\genericPn{}}}
+
+\newcommand{\genericMatrix}[1]{\ensuremath{\matrixname{#1}_{\genericBmxn{}}}}
+\newcommand{\lineName}{line}
+
+\newcommand{\su}[1]{\scalarfunction{s}{#1}}
+\newcommand{\sa}[1]{\scalarfunction{sa}{#1}}
+\newcommand{\me}[1]{\scalarfunction{m}{#1}}
+\newcommand{\HT}[1]{\matrixfunction{T}{#1}}
+\newcommand{\DM}{\matrixname{D}}
+\newcommand{\HM}{\matrixname{H}}
+
+\newcommand{\abssu}[1]{\abs{\su{#1}}}
+
+
+
+\newcommand{\bitstream}[1][]{bitstream#1}
+\newcommand{\searchOrder}[1][]{search order#1}
+
+\newcommand{\caseStudySymbol}{CS}
+\newcommand{\citeCaseStudy}[2]{\caseStudySymbol{}-\ref{#1}.\ref{#2}}
+\newcommand{\citeExperiment}[2]{E-\ref{#1}.\ref{#2}}

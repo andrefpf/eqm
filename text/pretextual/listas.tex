@@ -1,0 +1,84 @@
+%!TEX root = ../main.tex
+
+\ifnum\totvalue{figure}>0
+  \clearpage%
+  \listoffigures*
+\fi
+
+\ifnum\totvalue{table}>0
+  \clearpage%
+  \listoftables*
+\fi
+
+\ifnum\totvalue{algocf}>0
+  \clearpage%
+  \listofalgorithms*
+\fi
+
+%%% LISTA DE ACRÔNIMOS
+\newcommand{\inserirListaDeAcronimos}{%
+  \pdfbookmark[0]{\listadesiglasname}{loc}%
+  \renewcommand*\glspostdescription{\dotfill}
+  \setlist[description]{leftmargin=!, labelwidth=5em}
+  \printglossary[type=\acronymtype,title={\listadesiglasname}]%
+  \setlist[description]{style=standard}
+  \cleardoublepage%  
+}%
+
+%%% LISTA DE SÍMBOLOS
+\newcommand{\inserirListaDeSimbolos}{%
+  \pdfbookmark[0]{\listadesimbolosname}{los}%
+  %\PRIVATEbookmarkthis{\listadesimbolosname}
+  \renewcommand*\glspostdescription{\dotfill}
+  \setlist[description]{leftmargin=!, labelwidth=3em}
+  \newcounter{dummySymbol}
+  \refstepcounter{dummySymbol}
+  \label{list.symbols}
+  \printglossary[type=symbols,title={\listadesimbolosname}, nogroupskip]%
+  \setlist[description]{style=standard}
+  \cleardoublepage%  \printglossary[type=symbols, title={\listadesimbolosname}, nogroupskip]
+}%
+
+\newcommand{\insertListOfSymbols}{\inserirListaDeSimbolos{}}%
+
+
+
+%%% NOTAÇÃO
+\newcommand{\notacaoname}{Notation}
+\newcommand{\inserirNotacao}{%
+  \pdfbookmark[0]{\notacaoname}{not}%
+  %\PRIVATEbookmarkthis{\listadesimbolosname}
+  \newcounter{dummyNotation}
+  \refstepcounter{dummyNotation}
+  \label{list.notation}
+  \renewcommand*\glspostdescription{}
+  \printglossary[type=notation,title={\notacaoname},style=tree,nonumberlist]%
+  \cleardoublepage%  
+}%
+
+\newcommand{\insertNotation}{\inserirNotacao{}}%
+
+
+% ---
+% inserir lista de abreviaturas e siglas
+% ---
+\ifnum\totvalue{acronymusecount}>0
+  \clearpage%
+  \inserirListaDeAcronimos{}
+\fi
+
+\ifthenelse{\boolean{addNotation}}{%
+  \clearpage%
+  \inserirNotacao{}%
+}{}%
+
+% ---
+% inserir lista de símbolos
+% ---
+\ifnum\totvalue{symbolusecount}>0
+  \clearpage%
+  \inserirListaDeSimbolos{}
+\fi
+
+\clearpage%
+\tableofcontents*
